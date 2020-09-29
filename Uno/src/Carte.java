@@ -3,7 +3,7 @@ public class Carte {
 	private Figure figure;
 	private int valeur;
 	private String couleur;
-	
+
 	public Carte(Figure f, int val, String col) {
 		this.figure = f;
 		this.valeur = val;

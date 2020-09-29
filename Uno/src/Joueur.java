@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 
 public class Joueur {
 	private String identifiant;
@@ -10,7 +12,8 @@ public class Joueur {
 	/*
 	 * procédure mainInit appelé 1 fois en début de jeu pour distribuer les 7 cartes de la main initial du joueur.
 	 */
-	public void mainInit(JeuDeCarte jeu) {
+	public void mainInit(JeuDeCartes jeu) {
+		main = new ArrayList<Carte>();
 		for(int i = 1; i<= 7; i++) {
 			Carte tmp;
 			tmp = jeu.tireCarte(); // return une Carte au hasard présent dans le paquet, la carte tiré doit être retiré du paquet.
@@ -26,7 +29,7 @@ public class Joueur {
 	/*
 	 * procédure quand le joueur ne peut pas jouer de carte et doit en pioché une.
 	 */
-	public void tireCarte(JeuDeCarte jeu) {
+	public void tireCarte(JeuDeCartes jeu) {
 		main.add(jeu.TireCarte());
 	}
 }
