@@ -1,9 +1,17 @@
+import java.util.ArrayList;
+import java.util.List;
 
 public class Uno {
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
+	private List<Carte> paquet;
+	private List<Joueur> joueurs = new ArrayList<Joueur>()
+	private boolean game_over = false;
+	
+	public Uno (List<Carte> jeu) {
+		paquet = jeu;
 	}
-
+	
+	public void distribuerCartes() {
+		
+	}
 }
