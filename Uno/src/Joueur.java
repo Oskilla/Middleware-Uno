@@ -7,6 +7,9 @@ public class Joueur {
 	public Joueur(String identifiant){
 		this.identifiant = identifiant;
 	}
+	/*
+	 * procédure mainInit appelé 1 fois en début de jeu pour distribuer les 7 cartes de la main initial du joueur.
+	 */
 	public void mainInit(JeuDeCarte jeu) {
 		for(int i = 1; i<= 7; i++) {
 			Carte tmp;
@@ -14,9 +17,15 @@ public class Joueur {
 			main.add(tmp);
 		}
 	}
-	public void joueCarte() {
+	/*
+	 * procédure appelé quand le joueur joue une carte. Le joueur doit jouer une carte de sa main
+	 */
+	public void joueCarte(Carte carte) {
 		
 	}
+	/*
+	 * procédure quand le joueur ne peut pas jouer de carte et doit en pioché une.
+	 */
 	public void tireCarte(JeuDeCarte jeu) {
 		main.add(jeu.TireCarte());
 	}
