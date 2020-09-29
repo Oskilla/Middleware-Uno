@@ -1,16 +1,18 @@
+
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class Main {
 	
-	static final String[] Figures = {"Numéro","Interdit","Sens","+2","+4","Couleurs"};
+	static final String[] Figures = {"Numéro","Interdit","Sens","+2","+4","Couleur"};
 	
 	static final String[] Couleurs = {"Rouge","Vert","Jaune","Bleu","Noir"};
-	
+  
 	static List<Carte> paquet = new ArrayList<Carte>();
 
+
 	public static void main(String[] args) {
-		
 		
 		
 	}
@@ -46,5 +48,7 @@ public class Main {
 			cptFigure+=1;
 			paquet.add(new Carte(Figures[cptFigure],50,Couleurs[4]));	
 		}
+
+
 
 }

@@ -4,7 +4,8 @@ public class Carte {
 	private int valeur;
 	private String couleur;
 	
-	public Carte(String f, int val, String col) {
+
+	public Carte(Figure f, int val, String col) {
 		this.figure = f;
 		this.valeur = val;
 		this.couleur = col;
