@@ -42,7 +42,7 @@ Si il ne reste plus aucune carte dans la pioche, le talon est alors mélangé, v
 **Certains effets de carte s'applique au début du tour d'un nouveau joueur, comme un +4, par exemple, dans ce cas là le joueur reçoit les cartes du paquet, elle sont donc retirées de ce dernier, et son tour est automatiquement passé.
 Il en vas de même pour les effets des cartes Sens, ou bien Interdit.**
 
-Le joueur dont c'est le tour de jouer, joue une carte de même couleur, de même signe ou de même figure que le talon, il peut également jouer une carte Couleur ou bien +4. Une fois que la carte est jouée, le joueur passe automatiquement son tour.
+Le joueur dont c'est le tour de jouer, joue une carte de même couleur, de même numéro ou de même symbole que le talon, il peut également jouer une carte Couleur ou bien +4. Une fois que la carte est jouée, le joueur passe automatiquement son tour.
 *Si le joueur ne peut pas jouer de cartes alors il doit piocher dans la pioche, la carte est donc retirée du paquet.*
 
 **Si le joueur pioche une carte, il peut, si les règles ci-dessus sont respectées, jouer la carte et aucune autre, sinon le joueur passe son tour**
