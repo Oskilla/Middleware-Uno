@@ -7,7 +7,18 @@ public class Uno {
   private Joueur courant;
   private int sens = 1;
 
-  public Uno(List<Carte> jeu, List<Joeur> j){
-    
+  public Uno(List<Carte> jeu, List<Joueur> j){
+    for (int i=0; i<jeu.size();i++) {
+      this.pioche.add(jeu.get(i));
+    }
+    for (int j=0;j<j.size();j++) {
+      this.joueurs.add(j.get(i));
+    }
+  }
+
+  public void InitGame(){
+    for (int i=0; ; ) {
+
+    }
   }
 }
