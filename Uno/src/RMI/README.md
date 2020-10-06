@@ -9,7 +9,7 @@ To run a client :
 - Si necessaire, supprimer les .class : rm RMI/src/*.class
 - Compiler les classes : javac -Xlint RMI/src/*.java
 - Executer : - rmic RMI.src.InformationImpl
-             - rmiregistry&
+             - rmiregistry&  ---> sur windows: start rmiregistry
              - java RMI/src/Client.java
              
  Si un problème de port se pose : 
