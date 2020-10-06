@@ -6,10 +6,11 @@ public class Joueur {
   private String identifiant;
   private List<Carte> main = new ArrayList<Carte>();
 
-  public Joueur(String id,List<Carte> cartes){
+ 
+  public Joueur(String id,Uno leJeu){
     this.identifiant = id;
-    for (int i=0;i<cartes.size();i++) {
-      main.add(cartes.get(i));
+    for (int i=0;i<leJeu.getPioche().size();i++) {
+      main.add(leJeu.retirerList(leJeu.getPioche(),i));
     }
   }
 
