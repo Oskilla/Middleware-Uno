@@ -5,11 +5,13 @@ public class Joueur {
 
   private String identifiant;
   private List<Carte> main = new ArrayList<Carte>();
-
-  public Joueur(String id,List<Carte> cartes){
+  private Uno leJeu;
+ 
+  public Joueur(String id,Uno leJeu){
     this.identifiant = id;
-    for (int i=0;i<cartes.size();i++) {
-      main.add(cartes.get(i));
+    this.leJeu = leJeu;
+    for (int i=0;i<this.leJeu.getPioche().size();i++) {
+      main.add(this.leJeu.retirerList(this.leJeu.getPioche(),i));
     }
   }
 
@@ -21,11 +23,23 @@ public class Joueur {
     return this.main;
   }
 
-  public Carte jouer(Carte c){
-    if(this.main.contains(c)){
+  public void jouer(Carte c){
+    /*if(this.main.contains(c)){
       return c;
     }
-    return null;
+    return null;*/
+	//il faut réfléchir a comment géré la méthode jouer
+	
+	  
+	//la méthode doit ce terminer ainsi
+	int current = this.leJeu.getJoueurs().indexOf(this);
+	if(this.leJeu.getSens()) {		
+		this.leJeu.setCourant(this.leJeu.getJoueurs().get(current+1));
+	}else {
+		this.leJeu.setCourant(this.leJeu.getJoueurs().get(current+1));
+	}
+	this.leJeu.tourDeJeu();
+	
   }
 
   public void piocher(Carte c){
