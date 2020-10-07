@@ -10,7 +10,7 @@ public class Uno {
   private List<String> couleurs = new ArrayList<String>();
   private Boolean GameOver = false;
   private Joueur courant;
-  private int sens = 1;
+  private boolean sens = true; //true pour sens horraire, false pour anti-horraire.
 
   //je suis pas sûr de la pertinence de ce constructeur
   //peut être qu'il faudrait juste faire un appel a init
@@ -25,6 +25,7 @@ public class Uno {
   public Uno(List<String> joueurs) {
 	    
 	  InitGame(joueurs);
+	  this.GameOver = false;
   }
 
   public void InitGame(List<String> joueurs){
@@ -41,6 +42,8 @@ public class Uno {
 	    	CarteAction crta2 = new CarteAction(couleurs.get(i),"Carte +4","+4"); 
 	    	CarteAction crta3 = new CarteAction(couleurs.get(i),"Carte +2 "+couleurs.get(i),"+2");
 	    	CarteAction crta4 = new CarteAction(couleurs.get(i),"Carte +2 "+couleurs.get(i),"+2");
+	    	CarteAction crta7 = new CarteAction(couleurs.get(i),"Carte passe tour "+couleurs.get(i),"Passe tour");
+	    	CarteAction crta8 = new CarteAction(couleurs.get(i),"Carte passe tour "+couleurs.get(i),"Passe tour");
 	    	CarteAction crta5 = new CarteAction(couleurs.get(i),"Carte changement sens "+couleurs.get(i),"Change Sens");
 	    	CarteAction crta6 = new CarteAction(couleurs.get(i),"Carte changement sens "+couleurs.get(i),"Change Sens");
 	    	pioche.add(crta1);
@@ -49,13 +52,26 @@ public class Uno {
 	    	pioche.add(crta4);
 	    	pioche.add(crta5);
 	    	pioche.add(crta6);
+	    	pioche.add(crta7);
+	    	pioche.add(crta8);
 	    }
 	    this.melangerList(this.pioche);
     for(int i = 1; i<=joueurs.size();i++) {
     	Joueur jo = new Joueur(joueurs.get(i),this);
     	this.joueurs.add(jo);
     }
+    this.courant = this.joueurs.get(0);
   }
+  
+ public void tourDeJeu() {
+	 //implementer un timer.
+	 //action listener pour definir la carte jouer par this.courant.
+	 Carte c = courant.getMain().get(1);
+	 if(c.getCouleur().equals(talon.get(talon.size()).getCouleur())) { //il faut aussi tester que si la carte posé au tour précédent n'est pas un passage de tour ou un +2 ou un +4
+		 this.courant.jouer(c);
+	 }
+	 
+ }
   public void melangerList(List<Carte> aMelanger) {
 	  Collections.shuffle(aMelanger);
   }
@@ -86,7 +102,10 @@ public class Uno {
   public boolean isGameOver() {
 	  return GameOver;
   }
-  public int getSens() {
+  public boolean getSens() {
 	  return sens;
+  }
+  public void setGameOver() {
+	  this.GameOver = true;
   }
 }
