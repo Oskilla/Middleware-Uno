@@ -9,7 +9,7 @@ import java.rmi.RemoteException;
 
 public class Client {
 	private static final long serialVersionUID = 2674880711467464646L;
-	
+
 	public static void main(String[] args) {
 
 		/*  if (System.getSecurityManager() == null) {
@@ -19,7 +19,7 @@ public class Client {
 	    System.out.println("Lancement du client");
 
 		try {
-			
+
 			Remote r = Naming.lookup("192.168.43.81/TestRMI");
 		      System.out.println(r);
 		      if (r instanceof Information) {
@@ -33,7 +33,7 @@ public class Client {
 		    } catch (NotBoundException e) {
 		      e.printStackTrace();
 		    }
-	
+
 		    System.out.println("Fin du client");
 	}
 }

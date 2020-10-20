@@ -1,7 +1,5 @@
 package RMI.src;
 
-
-
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
