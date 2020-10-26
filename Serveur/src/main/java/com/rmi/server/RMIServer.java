@@ -2,35 +2,40 @@ package com.rmi.server;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.Naming;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.rmi.impl.ImplMInterface;
-import com.rmi.intf.MInterface;
+import com.rmi.entity.*;
+import com.rmi.impl.*;
+import com.rmi.intf.*;
 
 public class RMIServer {
+  public void start() {
+    try {
+      JoueurInterface j = new Joueur("Damien",null,null);
+      JoueurInterface j2 = new Joueur("Damien2",null,null);
+      JoueurInterface j3 = new Joueur("Damien3",null,null);
+      JoueurInterface j4 = new Joueur("Damien4",null,null);
 
-    public void start() {
-        // try {
-        // Naming.rebind("//localhost/RMIServer", new ImplMInterface());
-        // System.err.println("Server is running");
-        // } catch (Exception e) {
-        // System.err.println("Server exception: " + e.toString());
-        // e.printStackTrace();
-        // }
-        try {
+      List<JoueurInterface> joueurs = new ArrayList<JoueurInterface>();
 
-            MInterface mInterface = new ImplMInterface();
-            Registry reg = LocateRegistry.createRegistry(1099);
-            reg.rebind("ImplMInterface_1099", mInterface);
+      joueurs.add(j);
+      joueurs.add(j2);
+      joueurs.add(j3);
+      joueurs.add(j4);
 
-            System.out.println("\n----------------------------------");
-            System.out.println("Welcome to the RMI Server !");
-            System.out.println("----------------------------------\n");
+      UnoInterface uno = new Uno(joueurs);
+      uno.InitGame();
+      LocateRegistry.createRegistry(1099);
+      Naming.bind("ImplMInterface_1099", uno);
 
-        } catch (Exception e) {
-            System.out.println("An error occured: " + e.toString());
-            e.printStackTrace();
-        }
-
+      System.out.println("\n----------------------------------");
+      System.out.println("Welcome to the RMI Server !");
+      System.out.println("----------------------------------\n");
+    } catch (Exception e) {
+      System.out.println("An error occured: " + e.toString());
+      e.printStackTrace();
     }
-
+  }
 }

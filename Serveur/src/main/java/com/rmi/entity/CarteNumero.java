@@ -1,12 +1,22 @@
 package com.rmi.entity;
 
-public class CarteNumero extends Carte {
+import com.rmi.intf.CarteInterface;
+
+import java.rmi.server.UnicastRemoteObject;
+import java.rmi.RemoteException;
+
+public class CarteNumero extends UnicastRemoteObject implements CarteInterface {
 
   private int numero;
+  private String couleur;
 
-  public CarteNumero(String col, int num) {
-    super(col);
+  public CarteNumero(String col, int num) throws RemoteException{
+    this.couleur = col;
     this.numero = num;
+  }
+
+  public String getCouleur(){
+    return this.couleur;
   }
 
   public int getNumero(){

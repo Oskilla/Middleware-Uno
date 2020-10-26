@@ -1,23 +1,17 @@
 package com.rmi.client;
 
+import com.rmi.intf.*;
 import java.rmi.Naming;
 
-import com.rmi.intf.MInterface;
-
 public class RMIClient {
-
-    MInterface mInterface;
-
-    public RMIClient() {
-
-        try {
-
-            mInterface = (MInterface) Naming.lookup("rmi://localhost/ImplMInterface_1099");
-            mInterface.printMsg();
-
-        } catch (Exception e) {
-            System.out.println("A problem occured with server: " + e.toString());
-            e.printStackTrace();
-        }
+  UnoInterface mInterface;
+  public RMIClient() {
+    try {
+      mInterface = (UnoInterface) Naming.lookup("rmi://localhost/ImplMInterface_1099");
+      System.out.println(mInterface.getCourant().getId());
+    } catch (Exception e) {
+      System.out.println("A problem occured with server: " + e.toString());
+      e.printStackTrace();
     }
+  }
 }

@@ -1,23 +1,28 @@
 package com.rmi.entity;
 
+import com.rmi.intf.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Arrays;
+import java.rmi.server.UnicastRemoteObject;
+import java.rmi.RemoteException;
 
-public class Uno {
+public class Uno extends UnicastRemoteObject implements UnoInterface {
 
-  private List<Joueur> joueurs = new ArrayList<Joueur>();
-  private List<Carte> talon = new ArrayList<Carte>();
-  private List<Carte> pioche = new ArrayList<Carte>();
+  private List<JoueurInterface> joueurs = new ArrayList<JoueurInterface>();
+  private List<CarteInterface> talon = new ArrayList<CarteInterface>();
+  private List<CarteInterface> pioche = new ArrayList<CarteInterface>();
   private final List<String> couleurs = new ArrayList<String>(Arrays.asList("Rouge","Bleu","Jaune","Vert","Noire"));
   private final List<String> symboles = new ArrayList<String>(Arrays.asList("+2","sens","interdit","+4","couleur"));
   private Boolean GameOver = false;
-  private Joueur courant;
+  private JoueurInterface courant;
   private String couleurChoisie;
   private boolean sens = true; //true pour sens horraire, false pour anti-horraire.
 
-  public Uno(List<Joueur> Listjoueurs){
+  public Uno(List<JoueurInterface> Listjoueurs) throws RemoteException{
+    super();
     for (int i=0;i<Listjoueurs.size();i++) {
       switch (i) {
         case 0:
@@ -60,9 +65,9 @@ public class Uno {
     }
   }
 
-  public void InitGame(){
+  public void InitGame() throws RemoteException{
 	  this.melangerList(this.pioche);
-    for(Joueur j : this.joueurs){
+    for(JoueurInterface j : this.joueurs){
       for(int i=0;i<7;i++){
         j.piocher(this.pioche.remove(0));
       }
@@ -70,22 +75,22 @@ public class Uno {
     while(this.pioche.get(0).getClass() == CarteAction.class){
       this.melangerList(this.pioche);
     }
-    Carte c = this.pioche.remove(0);
+    CarteInterface c = this.pioche.remove(0);
     this.couleurChoisie = c.getCouleur();
     this.talon.add(c);
     this.courant = this.joueurs.get(0);
   }
 
-  public boolean JouerCarte(Joueur j,Carte carte,String col){
+  public boolean JouerCarte(JoueurInterface j,CarteInterface carte,String col) throws RemoteException{
     if(!this.GameOver){
       if(j == courant){
-        Carte last = this.talon.get(this.talon.size()-1);
+        CarteInterface last = this.talon.get(this.talon.size()-1);
         if(this.pioche.size()<=4){
           this.talonIntoPioche();
         }
         if(carte == null){
           if(this.peutJouer(j) == null){
-            Carte cartePiocher = this.pioche.remove(0);
+            CarteInterface cartePiocher = this.pioche.remove(0);
             j.piocher(cartePiocher);
             if(this.peutJouer(cartePiocher,j)){
               this.CarteJouer(j,cartePiocher);
@@ -199,7 +204,7 @@ public class Uno {
     return false;
   }
 
-  public void CarteJouer(Joueur j,Carte c){
+  public void CarteJouer(JoueurInterface j,CarteInterface c) throws RemoteException{
     this.talon.add(c);
     j.jouer(c);
     if(j.getMain().size() == 0){
@@ -217,9 +222,9 @@ public class Uno {
     }
   }
 
-  public Carte peutJouer(Joueur j){
-    Carte last = this.talon.get(this.talon.size()-1);
-    for(Carte c : j.getMain()){
+  public CarteInterface peutJouer(JoueurInterface j) throws RemoteException{
+    CarteInterface last = this.talon.get(this.talon.size()-1);
+    for(CarteInterface c : j.getMain()){
       if(c.getCouleur() == "Noire"){
         return c;
       }
@@ -245,8 +250,8 @@ public class Uno {
     return null;
   }
 
-  public boolean peutJouer(Carte c, Joueur j){
-    Carte last = this.talon.get(this.talon.size()-1);
+  public boolean peutJouer(CarteInterface c, JoueurInterface j) throws RemoteException{
+    CarteInterface last = this.talon.get(this.talon.size()-1);
     if(j.getMain().contains(c)){
       if(c.getCouleur() == "Noire"){
         return true;
@@ -275,25 +280,25 @@ public class Uno {
 
   public void talonIntoPioche(){
     this.melangerList(this.talon);
-    for(Carte carte : this.talon){
+    for(CarteInterface carte : this.talon){
       this.pioche.add(carte);
     }
     this.talon.clear();
   }
 
-  public List<Joueur> getJoueurs(){
+  public List<JoueurInterface> getJoueurs() throws RemoteException{
 	  return joueurs;
   }
 
-  public Joueur getJoueur(int i){
+  public JoueurInterface getJoueur(int i) throws RemoteException{
 	  return joueurs.get(i);
   }
 
-  public List<Carte> getTalon(){
+  public List<CarteInterface> getTalon(){
 	  return talon;
   }
 
-  public List<Carte> getPioche(){
+  public List<CarteInterface> getPioche(){
 	  return pioche;
   }
 
@@ -305,7 +310,7 @@ public class Uno {
 	  this.GameOver = true;
   }
 
-  public Joueur getCourant(){
+  public JoueurInterface getCourant() throws RemoteException{
 	  return courant;
   }
 
@@ -313,7 +318,7 @@ public class Uno {
     return this.couleurChoisie;
   }
 
-  public void setCourant(Joueur newCourant){
+  public void setCourant(JoueurInterface newCourant) throws RemoteException{
 	  courant = newCourant;
   }
 
@@ -325,7 +330,7 @@ public class Uno {
 	  this.sens = !sens;
   }
 
-  public void melangerList(List<Carte> aMelanger){
+  public void melangerList(List<CarteInterface> aMelanger){
 	  Collections.shuffle(aMelanger);
   }
 

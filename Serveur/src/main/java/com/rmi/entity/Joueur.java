@@ -1,17 +1,21 @@
 package com.rmi.entity;
 
+import com.rmi.intf.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Joueur {
+import java.rmi.server.UnicastRemoteObject;
+import java.rmi.RemoteException;
+
+public class Joueur extends UnicastRemoteObject implements JoueurInterface{
 
   private String identifiant;
-  Joueur left;
-  Joueur right;
-  private List<Carte> main = new ArrayList<Carte>();
-  Uno uno;
+  JoueurInterface left;
+  JoueurInterface right;
+  private List<CarteInterface> main = new ArrayList<CarteInterface>();
 
-  public Joueur(String id,Joueur l, Joueur r){
+  public Joueur(String id,JoueurInterface l, JoueurInterface r) throws RemoteException{
+    super();
     this.identifiant = id;
     this.left = l;
     this.right = r;
@@ -21,31 +25,27 @@ public class Joueur {
     return this.identifiant;
   }
 
-  public Joueur getLeft(){
+  public JoueurInterface getLeft(){
     return this.left;
   }
 
-  public void setLeft(Joueur j){
+  public void setLeft(JoueurInterface j){
     this.left = j;
   }
 
-  public Joueur getRight(){
+  public JoueurInterface getRight(){
     return this.right;
   }
 
-  public void setRight(Joueur j){
+  public void setRight(JoueurInterface j){
     this.right = j;
   }
 
-  public List<Carte> getMain(){
+  public List<CarteInterface> getMain(){
     return this.main;
   }
 
-  public Uno getUno(){
-    return this.uno;
-  }
-
-  public Carte jouer(Carte c){
+  public CarteInterface jouer(CarteInterface c){
     if(this.main.contains(c)){
       this.main.remove(c);
       return c;
@@ -54,12 +54,12 @@ public class Joueur {
     }
   }
 
-  public void piocher(Carte c){
+  public void piocher(CarteInterface c){
     this.main.add(c);
   }
 
-  public void montreMain(){
-    for(Carte c : this.main){
+  public void montreMain() throws RemoteException{
+    for(CarteInterface c : this.main){
       System.out.println(c.affiche());
     }
   }
