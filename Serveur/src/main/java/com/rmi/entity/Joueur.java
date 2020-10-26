@@ -1,3 +1,5 @@
+package com.rmi.entity;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +9,7 @@ public class Joueur {
   Joueur left;
   Joueur right;
   private List<Carte> main = new ArrayList<Carte>();
+  Uno uno;
 
   public Joueur(String id,Joueur l, Joueur r){
     this.identifiant = id;
@@ -36,6 +39,10 @@ public class Joueur {
 
   public List<Carte> getMain(){
     return this.main;
+  }
+
+  public Uno getUno(){
+    return this.uno;
   }
 
   public Carte jouer(Carte c){

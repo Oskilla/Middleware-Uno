@@ -1,3 +1,5 @@
+package com.rmi.entity;
+
 public class CarteNumero extends Carte {
 
   private int numero;

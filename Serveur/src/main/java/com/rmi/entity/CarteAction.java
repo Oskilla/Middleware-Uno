@@ -1,3 +1,5 @@
+package com.rmi.entity;
+
 public class CarteAction extends Carte {
 
   private String symbole;

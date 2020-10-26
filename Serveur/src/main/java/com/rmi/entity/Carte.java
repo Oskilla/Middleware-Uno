@@ -1,3 +1,5 @@
+package com.rmi.entity;
+
 public abstract class Carte {
 
   private String couleur;

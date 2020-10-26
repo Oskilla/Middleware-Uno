@@ -1,3 +1,12 @@
+pour compiler le serveurou le client placez-vous dans le chemin suivant src/main/java/com/rmi et effectuez la commande suivante :
+<code>javac -cp com.rmi.* */*.java</code>
+pour éxécuter le serveur ou le client retournez dans le dossier src/main/java et faites:
+<code>java com.rmi.app.App</code>
+pour trouver le processus utilsant le port 1099
+<code>lsof -i:1099</code>
+pour le tuer
+<code>kill -9 NUMPROCESS</code>
+
 # Middleware-Uno
 
 Projet de **Middleware** 2020.
