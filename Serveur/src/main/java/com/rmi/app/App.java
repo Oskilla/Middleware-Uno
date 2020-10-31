@@ -5,11 +5,11 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.Naming;
 
-import com.rmi.intf.RMIServerInterface;
+import com.rmi.intf.*;
 import com.rmi.server.RMIServer;
 
 public class App {
-  private static RMIServerInterface rmiServ = null;
+  private RMIServerInterface rmiServ;
   public static void main(String[] args) throws Exception {
     try {
       LocateRegistry.createRegistry(1099);

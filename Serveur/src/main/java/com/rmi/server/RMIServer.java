@@ -10,10 +10,11 @@ import com.rmi.entity.*;
 import com.rmi.impl.*;
 import com.rmi.intf.*;
 
-public class RMIServer implements RMIServerInterface{
+public final class RMIServer implements RMIServerInterface{
 
   private List<JoueurInterface> joueursAttente = new ArrayList<JoueurInterface>();
   private UnoInterface uno;
+  private MessageInterface mess = new Message("");
 
   public RMIServer() {
     Thread thread = new Thread(() -> {
@@ -23,19 +24,31 @@ public class RMIServer implements RMIServerInterface{
     thread.start();
   }
 
-  public UnoInterface getUno(){
-    return this.uno;
+  public MessageInterface getMess(){
+    return this.mess;
   }
 
-  public synchronized String joinGame(String name) throws RemoteException{
+  public synchronized void joinGame(String name) throws RemoteException{
     JoueurInterface j = new Joueur(name,null,null);
     joueursAttente.add(j);
     if(joueursAttente.size() == 4){
       this.uno = new Uno(joueursAttente);
       this.uno.InitGame();
       joueursAttente.clear();
-      return "le joueur " + name + " est entré dans la partie, la partie commence";
+      this.mess = "le joueur " + name + " est entré dans la partie, la partie commence";
     }
-    return "le joueur " + name + " est entré dans la partie";
+    this.mess = "le joueur " + name + " est entré dans la partie";
+  }
+
+  public synchronized MessageInterface playCard(String id,CarteInterface c,String couleur){
+
+  }
+
+  public List<CarteInterface> getMyCards(String id){
+    
+  }
+
+  public boolean GameOver(){
+    return this.uno.isGameOver();
   }
 }
