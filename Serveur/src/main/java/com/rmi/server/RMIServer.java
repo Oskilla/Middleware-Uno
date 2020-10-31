@@ -1,41 +1,41 @@
 package com.rmi.server;
 
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.Naming;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
 import com.rmi.entity.*;
 import com.rmi.impl.*;
 import com.rmi.intf.*;
 
-public class RMIServer {
-  public void start() {
-    try {
-      JoueurInterface j = new Joueur("Damien",null,null);
-      JoueurInterface j2 = new Joueur("Damien2",null,null);
-      JoueurInterface j3 = new Joueur("Damien3",null,null);
-      JoueurInterface j4 = new Joueur("Damien4",null,null);
+public class RMIServer implements RMIServerInterface{
 
-      List<JoueurInterface> joueurs = new ArrayList<JoueurInterface>();
+  private List<JoueurInterface> joueursAttente = new ArrayList<JoueurInterface>();
+  private UnoInterface uno;
 
-      joueurs.add(j);
-      joueurs.add(j2);
-      joueurs.add(j3);
-      joueurs.add(j4);
+  public RMIServer() {
+    Thread thread = new Thread(() -> {
+      while (true) {
+      }
+    });
+    thread.start();
+  }
 
-      UnoInterface uno = new Uno(joueurs);
-      uno.InitGame();
-      LocateRegistry.createRegistry(1099);
-      Naming.bind("ImplMInterface_1099", uno);
+  public UnoInterface getUno(){
+    return this.uno;
+  }
 
-      System.out.println("\n----------------------------------");
-      System.out.println("Welcome to the RMI Server !");
-      System.out.println("----------------------------------\n");
-    } catch (Exception e) {
-      System.out.println("An error occured: " + e.toString());
-      e.printStackTrace();
+  public synchronized String joinGame(String name) throws RemoteException{
+    JoueurInterface j = new Joueur(name,null,null);
+    joueursAttente.add(j);
+    if(joueursAttente.size() == 4){
+      this.uno = new Uno(joueursAttente);
+      this.uno.InitGame();
+      joueursAttente.clear();
+      return "le joueur " + name + " est entré dans la partie, la partie commence";
     }
+    return "le joueur " + name + " est entré dans la partie";
   }
 }
