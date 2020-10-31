@@ -13,7 +13,7 @@ public final class RMIServer implements RMIServerInterface{
 
   private List<JoueurInterface> joueursAttente = new ArrayList<JoueurInterface>();
   private UnoInterface uno;
-  private MessageInterface mess;
+  private volatile MessageInterface mess;
 
   public RMIServer() throws RemoteException{
     this.mess = new Message("");
@@ -36,17 +36,19 @@ public final class RMIServer implements RMIServerInterface{
       this.uno.InitGame();
       joueursAttente.clear();
       this.mess.setMessage("le joueur " + name + " est entré dans la partie, la partie commence");
+      System.out.println("une partie commence");
+    }else{
+      this.mess.setMessage("le joueur " + name + " est entré dans la partie, en attente d'autres joueurs");
     }
-    this.mess.setMessage("le joueur " + name + " est entré dans la partie");
   }
 
   public synchronized MessageInterface playCard(String id,CarteInterface c,String couleur) throws RemoteException{
     if(this.uno.JouerCarte(id,c,couleur)){
       this.mess.setMessage(id + " a joué la carte " + c.affiche());
-      return null;
     }else{
       return new Message("La carte ne peut pas être jouée");
     }
+    return null;
   }
 
   public List<CarteInterface> getMyCards(String id) throws RemoteException{
