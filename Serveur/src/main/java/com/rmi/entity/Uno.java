@@ -105,15 +105,15 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
             return true;
           }
         }else{
-          if(carte.getCouleur() == "Noire"){
-            if(carte.getSymbole() == "couleur"){
+          if(carte.getCouleur().equals("Noire")){
+            if(carte.getSymbole().equals("couleur")){
               if(col == null){
                 return false;
               }else{
                 this.couleurChoisie = col;
               }
             }
-            if(carte.getSymbole() == "+4"){
+            if(carte.getSymbole().equals("+4")){
               if(this.sens){
                 j.getRight().piocher(this.pioche.remove(0));
                 j.getRight().piocher(this.pioche.remove(0));
@@ -131,7 +131,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
             this.CarteJouer(j,carte);
             return true;
           }else{
-            if(carte.getCouleur() == couleurChoisie){
+            if(carte.getCouleur().equals(couleurChoisie)){
               if(carte.getClass() == CarteAction.class){
                 switch (carte.getSymbole()){
                   case "sens":
@@ -163,11 +163,11 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
               if(carte.getClass() == last.getClass()){
                 switch (carte.getClass().toString()){
                   case "CarteAction":
-                    if(carte.getSymbole() == last.getSymbole()){
-                      if(carte.getSymbole() == "sens"){
+                    if(carte.getSymbole().equals(last.getSymbole())){
+                      if(carte.getSymbole().equals("sens")){
                         this.sens = !this.sens;
                       }
-                      if(carte.getSymbole() == "+2"){
+                      if(carte.getSymbole().equals("+2")){
                         if(this.sens){
                           j.getRight().piocher(this.pioche.remove(0));
                           j.getRight().piocher(this.pioche.remove(0));
@@ -178,7 +178,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
                           this.courant = j.getLeft();
                         }
                       }
-                      if(carte.getSymbole() == "interdit"){
+                      if(carte.getSymbole().equals("interdit")){
                         if(this.sens){
                           this.courant = j.getRight();
                         }else{
@@ -226,16 +226,16 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   public CarteInterface peutJouer(JoueurInterface j) throws RemoteException{
     CarteInterface last = this.talon.get(this.talon.size()-1);
     for(CarteInterface c : j.getMain()){
-      if(c.getCouleur() == "Noire"){
+      if(c.getCouleur().equals("Noire")){
         return c;
       }
-      if(c.getCouleur() == this.couleurChoisie){
+      if(c.getCouleur().equals(this.couleurChoisie)){
         return c;
       }else{
         if(c.getClass() == last.getClass()){
           switch (c.getClass().toString()){
             case "CarteAction":
-              if(c.getSymbole() == last.getSymbole()){
+              if(c.getSymbole().equals(last.getSymbole())){
                 return c;
               }
               break;
@@ -254,16 +254,16 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   public boolean peutJouer(CarteInterface c, JoueurInterface j) throws RemoteException{
     CarteInterface last = this.talon.get(this.talon.size()-1);
     if(j.getMain().contains(c)){
-      if(c.getCouleur() == "Noire"){
+      if(c.getCouleur().equals("Noire")){
         return true;
       }
-      if(c.getCouleur() == this.couleurChoisie){
+      if(c.getCouleur().equals(this.couleurChoisie)){
         return true;
       }else{
         if(c.getClass() == last.getClass()){
           switch (c.getClass().toString()){
             case "CarteAction":
-              if(c.getSymbole() == last.getSymbole()){
+              if(c.getSymbole().equals(last.getSymbole())){
                 return true;
               }
               break;
@@ -297,7 +297,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
 
   public JoueurInterface getJoueurByID(String id) throws RemoteException{
     for(JoueurInterface j : joueurs){
-      if(j.getId() == id){
+      if(j.getId().equals(id)){
         return j;
       }
     }

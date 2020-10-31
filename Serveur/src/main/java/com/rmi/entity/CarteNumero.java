@@ -28,6 +28,6 @@ public class CarteNumero extends UnicastRemoteObject implements CarteInterface {
   }
 
   public String affiche(){
-    return "Carte: " + this + " couleur: " + this.getCouleur() + " numero: " + this.numero;
+    return "couleur: " + this.getCouleur() + " numero: " + this.numero;
   }
 }
