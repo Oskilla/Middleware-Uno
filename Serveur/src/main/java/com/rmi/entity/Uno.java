@@ -81,7 +81,8 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
     this.courant = this.joueurs.get(0);
   }
 
-  public boolean JouerCarte(JoueurInterface j,CarteInterface carte,String col) throws RemoteException{
+  public boolean JouerCarte(String id,CarteInterface carte,String col) throws RemoteException{
+    JoueurInterface j = getJoueurByID(id);
     if(!this.GameOver){
       if(j == courant){
         CarteInterface last = this.talon.get(this.talon.size()-1);
@@ -292,6 +293,15 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
 
   public JoueurInterface getJoueur(int i) throws RemoteException{
 	  return joueurs.get(i);
+  }
+
+  public JoueurInterface getJoueurByID(String id) throws RemoteException{
+    for(JoueurInterface j : joueurs){
+      if(j.getId() == id){
+        return j;
+      }
+    }
+    return null;
   }
 
   public List<CarteInterface> getTalon(){

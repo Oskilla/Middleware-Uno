@@ -7,16 +7,16 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 import com.rmi.entity.*;
-import com.rmi.impl.*;
 import com.rmi.intf.*;
 
 public final class RMIServer implements RMIServerInterface{
 
   private List<JoueurInterface> joueursAttente = new ArrayList<JoueurInterface>();
   private UnoInterface uno;
-  private MessageInterface mess = new Message("");
+  private MessageInterface mess;
 
-  public RMIServer() {
+  public RMIServer() throws RemoteException{
+    this.mess = new Message("");
     Thread thread = new Thread(() -> {
       while (true) {
       }
@@ -35,20 +35,25 @@ public final class RMIServer implements RMIServerInterface{
       this.uno = new Uno(joueursAttente);
       this.uno.InitGame();
       joueursAttente.clear();
-      this.mess = "le joueur " + name + " est entré dans la partie, la partie commence";
+      this.mess.setMessage("le joueur " + name + " est entré dans la partie, la partie commence");
     }
-    this.mess = "le joueur " + name + " est entré dans la partie";
+    this.mess.setMessage("le joueur " + name + " est entré dans la partie");
   }
 
-  public synchronized MessageInterface playCard(String id,CarteInterface c,String couleur){
-
+  public synchronized MessageInterface playCard(String id,CarteInterface c,String couleur) throws RemoteException{
+    if(this.uno.JouerCarte(id,c,couleur)){
+      this.mess.setMessage(id + " a joué la carte " + c.affiche());
+      return null;
+    }else{
+      return new Message("La carte ne peut pas être jouée");
+    }
   }
 
-  public List<CarteInterface> getMyCards(String id){
-    
+  public List<CarteInterface> getMyCards(String id) throws RemoteException{
+    return this.uno.getJoueurByID(id).getMain();
   }
 
-  public boolean GameOver(){
+  public boolean GameOver() throws RemoteException{
     return this.uno.isGameOver();
   }
 }

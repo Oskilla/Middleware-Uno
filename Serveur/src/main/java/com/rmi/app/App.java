@@ -9,7 +9,7 @@ import com.rmi.intf.*;
 import com.rmi.server.RMIServer;
 
 public class App {
-  private RMIServerInterface rmiServ;
+  private static RMIServerInterface rmiServ;
   public static void main(String[] args) throws Exception {
     try {
       LocateRegistry.createRegistry(1099);
