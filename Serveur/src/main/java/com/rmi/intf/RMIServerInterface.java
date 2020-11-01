@@ -13,5 +13,6 @@ public interface RMIServerInterface extends Remote{
   public MessageInterface playCard(String id,CarteInterface c,String couleur) throws RemoteException;
   public CarteInterface getLastTalon() throws RemoteException;
   public List<CarteInterface> getMyCards(String id) throws RemoteException;
+  public String getCouleurActu() throws RemoteException;
   public boolean GameOver() throws RemoteException;
 }

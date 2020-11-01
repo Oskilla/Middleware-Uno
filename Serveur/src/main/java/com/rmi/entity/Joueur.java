@@ -45,13 +45,14 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
     return this.main;
   }
 
-  public CarteInterface jouer(CarteInterface c){
-    if(this.main.contains(c)){
-      this.main.remove(c);
-      return c;
-    }else{
-      return null;
+  public CarteInterface jouer(CarteInterface carte) throws RemoteException{
+    for(CarteInterface c : this.main){
+      if(c.equals(carte)){
+        this.main.remove(c);
+        return c;
+      }
     }
+    return null;
   }
 
   public void piocher(CarteInterface c){

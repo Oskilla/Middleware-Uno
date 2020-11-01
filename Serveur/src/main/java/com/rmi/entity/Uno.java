@@ -94,7 +94,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
             CarteInterface cartePiocher = this.pioche.remove(0);
             j.piocher(cartePiocher);
             if(this.peutJouer(cartePiocher,j)){
-              this.CarteJouer(j,cartePiocher);
+              this.CarteJouer(j,cartePiocher,false);
             }else{
               if(this.sens){
                 this.courant = this.courant.getRight();
@@ -119,82 +119,68 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
                 j.getRight().piocher(this.pioche.remove(0));
                 j.getRight().piocher(this.pioche.remove(0));
                 j.getRight().piocher(this.pioche.remove(0));
-                this.courant = j.getRight();
               }else{
                 j.getLeft().piocher(this.pioche.remove(0));
                 j.getLeft().piocher(this.pioche.remove(0));
                 j.getLeft().piocher(this.pioche.remove(0));
                 j.getLeft().piocher(this.pioche.remove(0));
-                this.courant = j.getLeft();
               }
             }
-            this.CarteJouer(j,carte);
+            this.CarteJouer(j,carte,true);
             return true;
           }else{
             if(carte.getCouleur().equals(couleurChoisie)){
-              if(carte.getClass() == CarteAction.class){
-                switch (carte.getSymbole()){
-                  case "sens":
-                    this.sens = !this.sens;
-                    break;
-                  case "+2":
-                    if(this.sens){
-                      j.getRight().piocher(this.pioche.remove(0));
-                      j.getRight().piocher(this.pioche.remove(0));
-                      this.courant = j.getRight();
-                    }else{
-                      j.getLeft().piocher(this.pioche.remove(0));
-                      j.getLeft().piocher(this.pioche.remove(0));
-                      this.courant = j.getLeft();
-                    }
-                    break;
-                  case "interdit":
-                    if(this.sens){
-                      this.courant = j.getRight();
-                    }else{
-                      this.courant = j.getLeft();
-                    }
-                    break;
+              if(carte.getClassName().equals("CarteAction")){
+                if(carte.getSymbole().equals("sens")){
+                  changeSens();
+                  this.CarteJouer(j,carte,false);
+                  return true;
                 }
+                if(carte.getSymbole().equals("+2")){
+                  if(this.sens){
+                    j.getRight().piocher(this.pioche.remove(0));
+                    j.getRight().piocher(this.pioche.remove(0));
+                  }else{
+                    j.getLeft().piocher(this.pioche.remove(0));
+                    j.getLeft().piocher(this.pioche.remove(0));
+                  }
+                }
+              }else{
+                this.CarteJouer(j,carte,false);
+                return true;
               }
-              this.CarteJouer(j,carte);
+              this.CarteJouer(j,carte,true);
               return true;
             }else{
-              if(carte.getClass() == last.getClass()){
-                switch (carte.getClass().toString()){
-                  case "CarteAction":
-                    if(carte.getSymbole().equals(last.getSymbole())){
-                      if(carte.getSymbole().equals("sens")){
-                        this.sens = !this.sens;
-                      }
-                      if(carte.getSymbole().equals("+2")){
-                        if(this.sens){
-                          j.getRight().piocher(this.pioche.remove(0));
-                          j.getRight().piocher(this.pioche.remove(0));
-                          this.courant = j.getRight();
-                        }else{
-                          j.getLeft().piocher(this.pioche.remove(0));
-                          j.getLeft().piocher(this.pioche.remove(0));
-                          this.courant = j.getLeft();
-                        }
-                      }
-                      if(carte.getSymbole().equals("interdit")){
-                        if(this.sens){
-                          this.courant = j.getRight();
-                        }else{
-                          this.courant = j.getLeft();
-                        }
-                      }
-                      this.CarteJouer(j,carte);
+              if(carte.getClassName().equals(last.getClassName())){
+                if(carte.getClassName().equals("CarteAction")){
+                  if(carte.getSymbole().equals(last.getSymbole())){
+                    if(carte.getSymbole().equals("sens")){
+                      changeSens();
+                      this.CarteJouer(j,carte,false);
+                      this.couleurChoisie = carte.getCouleur();
                       return true;
                     }
-                    break;
-                  case "CarteNumero":
-                    if(carte.getNumero() == last.getNumero()){
-                      this.CarteJouer(j,carte);
-                      return true;
+                    if(carte.getSymbole().equals("+2")){
+                      if(this.sens){
+                        j.getRight().piocher(this.pioche.remove(0));
+                        j.getRight().piocher(this.pioche.remove(0));
+                      }else{
+                        j.getLeft().piocher(this.pioche.remove(0));
+                        j.getLeft().piocher(this.pioche.remove(0));
+                      }
                     }
-                    break;
+                    this.CarteJouer(j,carte,true);
+                    this.couleurChoisie = carte.getCouleur();
+                    return true;
+                  }
+                }
+                if(carte.getClassName().equals("CarteNumero")){
+                  if(carte.getNumero() == last.getNumero()){
+                    this.CarteJouer(j,carte,false);
+                    this.couleurChoisie = carte.getCouleur();
+                    return true;
+                  }
                 }
               }
             }
@@ -205,7 +191,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
     return false;
   }
 
-  public void CarteJouer(JoueurInterface j,CarteInterface c) throws RemoteException{
+  public void CarteJouer(JoueurInterface j,CarteInterface c,boolean pass) throws RemoteException{
     this.talon.add(c);
     j.jouer(c);
     if(j.getMain().size() == 0){
@@ -216,10 +202,18 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
         j.getRight().setLeft(j.getLeft());
       }
     }
-    if(this.sens){
-      this.courant = this.courant.getRight();
+    if(pass){
+      if(this.sens){
+        this.courant = this.courant.getRight().getRight();
+      }else{
+        this.courant = this.courant.getLeft().getLeft();
+      }
     }else{
-      this.courant = this.courant.getLeft();
+      if(this.sens){
+        this.courant = this.courant.getRight();
+      }else{
+        this.courant = this.courant.getLeft();
+      }
     }
   }
 
@@ -312,6 +306,14 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
 	  return pioche;
   }
 
+  public void changeSens(){
+    if(this.sens){
+      this.sens = false;
+    }else{
+      this.sens = true;
+    }
+  }
+
   public boolean isGameOver(){
 	  return GameOver;
   }
@@ -334,10 +336,6 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
 
   public boolean getSens(){
 	  return sens;
-  }
-
-  public void setSens(){
-	  this.sens = !sens;
   }
 
   public void melangerList(List<CarteInterface> aMelanger){

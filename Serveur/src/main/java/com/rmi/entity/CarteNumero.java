@@ -27,6 +27,17 @@ public class CarteNumero extends UnicastRemoteObject implements CarteInterface {
     return "symbol";
   }
 
+  public boolean equals(CarteInterface c) throws RemoteException{
+    if(c.getNumero() == this.numero && c.getCouleur().equals(this.couleur)){
+      return true;
+    }
+    return false;
+  }
+
+  public String getClassName(){
+    return "CarteNumero";
+  }
+
   public String affiche(){
     return "couleur: " + this.getCouleur() + " numero: " + this.numero;
   }

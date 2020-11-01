@@ -63,12 +63,16 @@ public final class RMIServer implements RMIServerInterface{
     return null;
   }
 
-  public List<CarteInterface> getMyCards(String id) throws RemoteException{
+  public synchronized List<CarteInterface> getMyCards(String id) throws RemoteException{
     return this.uno.getJoueurByID(id).getMain();
   }
 
   public CarteInterface getLastTalon() throws RemoteException{
     return this.uno.getTalon().get(this.uno.getTalon().size()-1);
+  }
+
+  public String getCouleurActu() throws RemoteException{
+    return this.uno.getCouleurChoisie();
   }
 
   public boolean GameOver() throws RemoteException{

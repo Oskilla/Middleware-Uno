@@ -27,6 +27,17 @@ public class CarteAction extends UnicastRemoteObject implements CarteInterface {
     return -1;
   }
 
+  public boolean equals(CarteInterface c) throws RemoteException{
+    if(c.getSymbole().equals(this.symbole) && c.getCouleur().equals(this.couleur)){
+      return true;
+    }
+    return false;
+  }
+
+  public String getClassName(){
+    return "CarteAction";
+  }
+
   public String affiche(){
     return "couleur: " + this.getCouleur() + " symbole: " + this.symbole;
   }
