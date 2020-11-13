@@ -55,6 +55,15 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
     return null;
   }
 
+  public boolean contient(CarteInterface carte) throws RemoteException{
+    for(CarteInterface c : this.main){
+      if(c.equals(carte)){
+        return true;
+      }
+    }
+    return false;
+  }
+
   public void piocher(CarteInterface c){
     this.main.add(c);
   }

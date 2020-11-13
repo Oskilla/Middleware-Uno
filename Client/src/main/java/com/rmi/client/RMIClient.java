@@ -20,9 +20,8 @@ public class RMIClient {
       System.out.println("Rentrez un pseudo");
       String pseudo = sc.nextLine();
       this.Id = pseudo;
-
-      mess = mInterface.getMess();
       mInterface.joinGame(pseudo);
+      mess = mInterface.getMess();
       Thread thread = new Thread(() -> {
         while (true) {
           try{
@@ -59,9 +58,35 @@ public class RMIClient {
             ++i;
           }
           System.out.println();
-          System.out.println("Sélectionnez le numéro de votre carte");
+          System.out.println("Sélectionnez le numéro de votre carte, ou -1 si vous ne pouvez pas jouer");
           int card = sc.nextInt();
-          MessageInterface temp = mInterface.playCard(Id,main.get(card),null);
+          MessageInterface temp;
+          if(card == -1){
+            temp = mInterface.playCard(Id,null,null);
+          }else{
+            if(main.get(card).getCouleur().equals("Noire") && main.get(card).getSymbole().equals("couleur")){
+              System.out.println("choisissez une couleure parmis, 1- Rouge, 2- Bleu, 3- Jaune, 4- Vert");
+              int color = sc.nextInt();
+              String myColChoice = "";
+              switch (color) {
+                case 1:
+                  myColChoice = "Rouge";
+                  break;
+                case 2:
+                  myColChoice = "Bleu";
+                  break;
+                case 3:
+                  myColChoice = "Jaune";
+                  break;
+                case 4:
+                  myColChoice = "Vert";
+                  break;
+              }
+              temp = mInterface.playCard(Id,main.get(card),myColChoice);
+            }else{
+              temp = mInterface.playCard(Id,main.get(card),null);
+            }
+          }
           if(temp != null){
             System.out.println(temp.getMessage());
           }

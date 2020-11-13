@@ -14,5 +14,6 @@ public interface JoueurInterface extends Remote {
   public List<CarteInterface> getMain() throws RemoteException;
   public CarteInterface jouer(CarteInterface c) throws RemoteException;
   public void piocher(CarteInterface c) throws RemoteException;
+  public boolean contient(CarteInterface c) throws RemoteException;
   public void montreMain() throws RemoteException;
 }

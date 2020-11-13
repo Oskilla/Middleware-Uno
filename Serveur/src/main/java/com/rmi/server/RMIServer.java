@@ -55,11 +55,22 @@ public final class RMIServer implements RMIServerInterface{
   }
 
   public synchronized MessageInterface playCard(String id,CarteInterface c,String couleur) throws RemoteException{
-    if(this.uno.JouerCarte(id,c,couleur)){
-      this.mess.setMessage(id + " a joué la carte " + c.affiche() +", c'est au tour du joueur " + this.uno.getCourant().getId());
+    MessageInterface message;
+    if(c == null){
+      CarteInterface test = this.uno.peutJouer(this.uno.getJoueurByID(id));
+      if(test != null){
+        return new Message("La carte " + test.affiche() + " peut être jouée");
+      }else{
+        this.mess.setMessage(id + " ne peut pas jouer, il pioche donc une carte");
+        message = new Message(this.uno.JouerCarte(id,this.uno.getCourant().getMain().get(this.uno.getCourant().getMain().size()-1),couleur,true).getMessage());
+      }
     }else{
-      return new Message("La carte ne peut pas être jouée");
+      message = new Message(this.uno.JouerCarte(id,c,couleur,false).getMessage());
     }
+    if(message.getMessage().equals("La carte ne peut pas être jouée")){
+      return message;
+    }
+    this.mess.setMessage(message.getMessage());
     return null;
   }
 
