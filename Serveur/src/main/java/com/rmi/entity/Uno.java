@@ -182,7 +182,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
     }
     if(aPioche){
       changeJoueur();
-      return new Message("La carte ne peut pas être jouée, c'est au tour du joueur " + this.courant.getId());
+      return new Message(id +" ne peut pas jouer, c'est au tour du joueur " + this.courant.getId());
     }
     return new Message("La carte ne peut pas être jouée");
   }
@@ -218,18 +218,16 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
       if(c.getCouleur().equals(this.couleurChoisie)){
         return c;
       }else{
-        if(c.getClass() == last.getClass()){
-          switch (c.getClass().toString()){
-            case "CarteAction":
-              if(c.getSymbole().equals(last.getSymbole())){
-                return c;
-              }
-              break;
-            case "CarteNumero":
-              if(c.getNumero() == last.getNumero()){
-                return c;
-              }
-              break;
+        if(c.getClassName().equals(last.getClassName())){
+          if(c.getClassName().equals("CarteAction")){
+            if(c.getSymbole().equals(last.getSymbole())){
+              return c;
+            }
+          }
+          if(c.getClassName().equals("CarteNumero")){
+            if(c.getNumero() == last.getNumero()){
+              return c;
+            }
           }
         }
       }

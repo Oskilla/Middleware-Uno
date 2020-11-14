@@ -28,7 +28,7 @@ public final class RMIServer implements RMIServerInterface{
     return this.mess;
   }
 
-  public JoueurInterface getCourant() throws RemoteException{
+  public synchronized JoueurInterface getCourant() throws RemoteException{
     return this.uno.getCourant();
   }
 
@@ -61,7 +61,8 @@ public final class RMIServer implements RMIServerInterface{
       if(test != null){
         return new Message("La carte " + test.affiche() + " peut être jouée");
       }else{
-        this.mess.setMessage(id + " ne peut pas jouer, il pioche donc une carte");
+        this.uno.JouerCarte(id,c,couleur,false);
+        System.out.println(this.uno.getCourant().getMain().get(this.uno.getCourant().getMain().size()-1).affiche());
         message = new Message(this.uno.JouerCarte(id,this.uno.getCourant().getMain().get(this.uno.getCourant().getMain().size()-1),couleur,true).getMessage());
       }
     }else{
@@ -78,11 +79,11 @@ public final class RMIServer implements RMIServerInterface{
     return this.uno.getJoueurByID(id).getMain();
   }
 
-  public CarteInterface getLastTalon() throws RemoteException{
+  public synchronized CarteInterface getLastTalon() throws RemoteException{
     return this.uno.getTalon().get(this.uno.getTalon().size()-1);
   }
 
-  public String getCouleurActu() throws RemoteException{
+  public synchronized String getCouleurActu() throws RemoteException{
     return this.uno.getCouleurChoisie();
   }
 
