@@ -9,11 +9,10 @@ import com.rmi.intf.*;
 import com.rmi.server.RMIServer;
 
 public class App {
-  private static RMIServerInterface rmiServ;
   public static void main(String[] args) throws Exception {
     try {
       LocateRegistry.createRegistry(1099);
-      rmiServ = (RMIServerInterface) UnicastRemoteObject
+      RMIServerInterface rmiServ = (RMIServerInterface) UnicastRemoteObject
         .exportObject(new RMIServer(), 1099);
       Naming.bind("Server_1099", rmiServ);
       System.out.println("\n----------------------------------");

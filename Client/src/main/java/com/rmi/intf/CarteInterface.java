@@ -9,5 +9,6 @@ public interface CarteInterface extends Remote{
   public abstract int getNumero() throws RemoteException;
   public boolean equals(CarteInterface c) throws RemoteException;
   public abstract String affiche() throws RemoteException;
+  public abstract String getClassName() throws RemoteException;
 
 }

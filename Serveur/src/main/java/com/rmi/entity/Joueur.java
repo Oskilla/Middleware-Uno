@@ -10,8 +10,8 @@ import java.rmi.RemoteException;
 public class Joueur extends UnicastRemoteObject implements JoueurInterface{
 
   private String identifiant;
-  JoueurInterface left;
-  JoueurInterface right;
+  private JoueurInterface left;
+  private JoueurInterface right;
   private List<CarteInterface> main = new ArrayList<CarteInterface>();
 
   public Joueur(String id,JoueurInterface l, JoueurInterface r) throws RemoteException{

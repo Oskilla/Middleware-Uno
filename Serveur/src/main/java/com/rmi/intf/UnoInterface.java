@@ -24,4 +24,5 @@ public interface UnoInterface extends Remote {
   public boolean getSens() throws RemoteException;
   public void changeSens() throws RemoteException;
   public void melangerList(List<CarteInterface> aMelanger) throws RemoteException;
+  public MessageInterface getMess() throws RemoteException;
 }

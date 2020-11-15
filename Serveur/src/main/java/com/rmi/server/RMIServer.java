@@ -1,5 +1,7 @@
 package com.rmi.server;
 
+import java.util.AbstractCollection;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,85 +11,104 @@ import java.rmi.RemoteException;
 import com.rmi.entity.*;
 import com.rmi.intf.*;
 
-public final class RMIServer implements RMIServerInterface{
+public class RMIServer implements RMIServerInterface{
 
-  private List<JoueurInterface> joueursAttente = new ArrayList<JoueurInterface>();
-  private UnoInterface uno;
-  private MessageInterface mess;
+  private List<JoueurInterface> joueursAttente;
+  private AbstractCollection<UnoInterface> UnoEnCours;
+  private volatile MessageInterface mess;
 
   public RMIServer() throws RemoteException{
+    this.joueursAttente = new ArrayList<JoueurInterface>();
+    this.UnoEnCours = new ConcurrentLinkedQueue<UnoInterface>();
     this.mess = new Message("");
-    Thread thread = new Thread(() -> {
-      while (true) {
-      }
-    });
-    thread.start();
   }
 
-  public synchronized MessageInterface getMess(){
+  public UnoInterface getJoueurDansUno(String id) throws RemoteException{
+    for(UnoInterface unos : this.UnoEnCours){
+      if(unos.getJoueurByID(id) != null){
+        return unos;
+      }
+    }
+    return null;
+  }
+
+  public synchronized MessageInterface getMessageCommun(String id) throws RemoteException{
+    UnoInterface u = getJoueurDansUno(id);
+    if(u != null){
+      return u.getMess();
+    }
     return this.mess;
   }
 
-  public synchronized JoueurInterface getCourant() throws RemoteException{
-    return this.uno.getCourant();
+  public synchronized JoueurInterface getCourant(String id) throws RemoteException{
+    UnoInterface u = getJoueurDansUno(id);
+    return u.getCourant();
   }
 
-  public synchronized boolean joinGame(String name) throws RemoteException{
+  public synchronized void joinGame(String name) throws RemoteException{
     JoueurInterface j = new Joueur(name,null,null);
     joueursAttente.add(j);
     if(joueursAttente.size() == 4){
-      this.uno = new Uno(joueursAttente);
-      this.uno.InitGame();
-      joueursAttente.clear();
       this.mess.setMessage("le joueur " + name + " est entré dans la partie, la partie commence");
+      UnoInterface uno = new Uno(joueursAttente);
+      uno.InitGame();
+      this.UnoEnCours.add(uno);
+      this.joueursAttente.clear();
       System.out.println("une partie commence");
     }else{
       this.mess.setMessage("le joueur " + name + " est entré dans la partie, en attente d'autres joueurs");
     }
-    return true;
   }
 
-  public boolean start() throws RemoteException{
-    if(this.uno == null){
-      return false;
+  public boolean start(String id) throws RemoteException{
+    UnoInterface u = getJoueurDansUno(id);
+    if(u != null){
+      return true;
     }
-    return true;
+    return false;
   }
 
   public synchronized MessageInterface playCard(String id,CarteInterface c,String couleur) throws RemoteException{
+    UnoInterface u = getJoueurDansUno(id);
     MessageInterface message;
     if(c == null){
-      CarteInterface test = this.uno.peutJouer(this.uno.getJoueurByID(id));
+      CarteInterface test = u.peutJouer(u.getJoueurByID(id));
       if(test != null){
         return new Message("La carte " + test.affiche() + " peut être jouée");
       }else{
-        this.uno.JouerCarte(id,c,couleur,false);
-        System.out.println(this.uno.getCourant().getMain().get(this.uno.getCourant().getMain().size()-1).affiche());
-        message = new Message(this.uno.JouerCarte(id,this.uno.getCourant().getMain().get(this.uno.getCourant().getMain().size()-1),couleur,true).getMessage());
+        u.JouerCarte(id,c,couleur,false);
+        message = new Message(u.JouerCarte(id,u.getCourant().getMain().get(u.getCourant().getMain().size()-1),couleur,true).getMessage());
       }
     }else{
-      message = new Message(this.uno.JouerCarte(id,c,couleur,false).getMessage());
+      message = new Message(u.JouerCarte(id,c,couleur,false).getMessage());
     }
     if(message.getMessage().equals("La carte ne peut pas être jouée")){
       return message;
     }
-    this.mess.setMessage(message.getMessage());
+    if(u.isGameOver()){
+      this.UnoEnCours.remove(u);
+      this.mess.setMessage(id + " a gagné");
+    }
     return null;
   }
 
   public synchronized List<CarteInterface> getMyCards(String id) throws RemoteException{
-    return this.uno.getJoueurByID(id).getMain();
+    UnoInterface u = getJoueurDansUno(id);
+    return u.getJoueurByID(id).getMain();
   }
 
-  public synchronized CarteInterface getLastTalon() throws RemoteException{
-    return this.uno.getTalon().get(this.uno.getTalon().size()-1);
+  public synchronized CarteInterface getLastTalon(String id) throws RemoteException{
+    UnoInterface u = getJoueurDansUno(id);
+    return u.getTalon().get(u.getTalon().size()-1);
   }
 
-  public synchronized String getCouleurActu() throws RemoteException{
-    return this.uno.getCouleurChoisie();
+  public synchronized String getCouleurActu(String id) throws RemoteException{
+    UnoInterface u = getJoueurDansUno(id);
+    return u.getCouleurChoisie();
   }
 
-  public boolean GameOver() throws RemoteException{
-    return this.uno.isGameOver();
+  public boolean GameOver(String id) throws RemoteException{
+    UnoInterface u = getJoueurDansUno(id);
+    return u.isGameOver();
   }
 }

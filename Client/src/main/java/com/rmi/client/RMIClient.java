@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class RMIClient {
-  private MessageInterface mess;
+  private volatile MessageInterface mess;
+  private boolean endThread = false;
   private JoueurInterface courant;
   private String Id;
   private List<CarteInterface> main = new ArrayList<CarteInterface>();
@@ -21,13 +22,13 @@ public class RMIClient {
       String pseudo = sc.nextLine();
       this.Id = pseudo;
       mInterface.joinGame(pseudo);
-      mess = mInterface.getMess();
+      mess = mInterface.getMessageCommun(this.Id);
       Thread thread = new Thread(() -> {
-        while (true) {
+        while (!endThread) {
           try{
-            if(!mess.getMessage().equals(mInterface.getMess().getMessage())){
+            if(!mess.getMessage().equals(mInterface.getMessageCommun(this.Id).getMessage())){
               System.out.println(mess.getMessage());
-              mess = mInterface.getMess();
+              mess = mInterface.getMessageCommun(this.Id);
             }
           } catch (Exception e) {
           }
@@ -35,21 +36,21 @@ public class RMIClient {
       });
       thread.start();
 
-      while(!mInterface.start()){}
-      for (CarteInterface c : mInterface.getMyCards(Id)) {
+      while(!mInterface.start(this.Id)){}
+      for (CarteInterface c : mInterface.getMyCards(this.Id)) {
         this.main.add(c);
       }
-      System.out.println("c'est au tour du joueur " + mInterface.getCourant().getId() + " de jouer");
-      while(!mInterface.GameOver()){
-        if(mInterface.getCourant().getId().equals(pseudo)){
+      System.out.println("c'est au tour du joueur " + mInterface.getCourant(this.Id).getId() + " de jouer");
+      while(!mInterface.GameOver(this.Id)){
+        if(mInterface.getCourant(this.Id).getId().equals(pseudo)){
           System.out.println();
-          System.out.println("la couleure demandée est " + mInterface.getCouleurActu());
+          System.out.println("la couleure demandée est " + mInterface.getCouleurActu(this.Id));
           System.out.println();
-          System.out.println("la dernière carte du talon est " + mInterface.getLastTalon().affiche());
+          System.out.println("la dernière carte du talon est " + mInterface.getLastTalon(this.Id).affiche());
           System.out.println();
           System.out.println("Voici votre main");
           this.main.clear();
-          for (CarteInterface c : mInterface.getMyCards(Id)) {
+          for (CarteInterface c : mInterface.getMyCards(this.Id)) {
             this.main.add(c);
           }
           int i = 0;
@@ -92,6 +93,9 @@ public class RMIClient {
           }
         }
       }
+      this.endThread = true;
+      thread.join();
+      System.out.println("Le jeu est terminé !");
     } catch (Exception e) {
       System.out.println("A problem occured with server: " + e.toString());
       e.printStackTrace();
