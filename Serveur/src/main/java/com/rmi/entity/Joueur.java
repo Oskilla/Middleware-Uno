@@ -13,6 +13,7 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   private JoueurInterface left;
   private JoueurInterface right;
   private List<CarteInterface> main = new ArrayList<CarteInterface>();
+  private UnoInterface myUno;
 
   public Joueur(String id,JoueurInterface l, JoueurInterface r) throws RemoteException{
     super();
@@ -72,5 +73,13 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
     for(CarteInterface c : this.main){
       System.out.println(c.affiche());
     }
+  }
+
+  public UnoInterface getUno() throws RemoteException{
+    return this.myUno;
+  }
+
+  public void setUno(UnoInterface u) throws RemoteException{
+    this.myUno = u;
   }
 }

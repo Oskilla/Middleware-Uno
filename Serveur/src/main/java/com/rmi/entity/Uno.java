@@ -16,6 +16,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   private List<CarteInterface> pioche = new ArrayList<CarteInterface>();
   private final List<String> couleurs = new ArrayList<String>(Arrays.asList("Rouge","Bleu","Jaune","Vert","Noire"));
   private final List<String> symboles = new ArrayList<String>(Arrays.asList("+2","sens","interdit","+4","couleur"));
+  private List<String> idJoueursPret = new ArrayList<String>();
   private Boolean GameOver = false;
   private JoueurInterface courant;
   private String couleurChoisie;
@@ -272,7 +273,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   }
 
   public JoueurInterface getJoueurByID(String id) throws RemoteException{
-    for(JoueurInterface j : joueurs){
+    for(JoueurInterface j : this.joueurs){
       if(j.getId().equals(id)){
         return j;
       }
@@ -326,6 +327,19 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
 
   public MessageInterface getMess() throws RemoteException{
     return this.messageCommun;
+  }
+
+  public void joueurPret(String id){
+    if(!this.idJoueursPret.contains(id)){
+      this.idJoueursPret.add(id);
+    }
+  }
+
+  public boolean tousPret() throws RemoteException{
+    if(this.idJoueursPret.size() == 4){
+      return true;
+    }
+    return false;
   }
 
 }

@@ -16,4 +16,6 @@ public interface JoueurInterface extends Remote {
   public void piocher(CarteInterface c) throws RemoteException;
   public boolean contient(CarteInterface c) throws RemoteException;
   public void montreMain() throws RemoteException;
+  public UnoInterface getUno() throws RemoteException;
+  public void setUno(UnoInterface u) throws RemoteException;
 }

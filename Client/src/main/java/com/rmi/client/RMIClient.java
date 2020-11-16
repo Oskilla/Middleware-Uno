@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Scanner;
 
 public class RMIClient {
-  private volatile MessageInterface mess;
+  private MessageInterface mess;
+  private UnoInterface monUnoActu;
   private boolean endThread = false;
-  private JoueurInterface courant;
   private String Id;
   private List<CarteInterface> main = new ArrayList<CarteInterface>();
   public RMIClient(){
@@ -22,13 +22,13 @@ public class RMIClient {
       String pseudo = sc.nextLine();
       this.Id = pseudo;
       mInterface.joinGame(pseudo);
-      mess = mInterface.getMessageCommun(this.Id);
+      mess = mInterface.getMessageCommun(this.Id,this.monUnoActu);
       Thread thread = new Thread(() -> {
         while (!endThread) {
           try{
-            if(!mess.getMessage().equals(mInterface.getMessageCommun(this.Id).getMessage())){
+            if(!mess.getMessage().equals(mInterface.getMessageCommun(this.Id,this.monUnoActu).getMessage())){
               System.out.println(mess.getMessage());
-              mess = mInterface.getMessageCommun(this.Id);
+              mess = mInterface.getMessageCommun(this.Id,this.monUnoActu);
             }
           } catch (Exception e) {
           }
@@ -36,21 +36,23 @@ public class RMIClient {
       });
       thread.start();
 
-      while(!mInterface.start(this.Id)){}
-      for (CarteInterface c : mInterface.getMyCards(this.Id)) {
+      while(this.monUnoActu == null){
+        this.monUnoActu = mInterface.start(this.Id);
+      }
+      for (CarteInterface c : mInterface.getMyCards(this.Id,this.monUnoActu)) {
         this.main.add(c);
       }
-      System.out.println("c'est au tour du joueur " + mInterface.getCourant(this.Id).getId() + " de jouer");
-      while(!mInterface.GameOver(this.Id)){
-        if(mInterface.getCourant(this.Id).getId().equals(pseudo)){
+      System.out.println("c'est au tour du joueur " + mInterface.getCourant(this.Id,this.monUnoActu).getId() + " de jouer");
+      while(!mInterface.GameOver(this.Id,this.monUnoActu)){
+        if(mInterface.getCourant(this.Id,this.monUnoActu).getId().equals(pseudo)){
           System.out.println();
-          System.out.println("la couleure demandée est " + mInterface.getCouleurActu(this.Id));
+          System.out.println("la couleure demandée est " + mInterface.getCouleurActu(this.Id,this.monUnoActu));
           System.out.println();
-          System.out.println("la dernière carte du talon est " + mInterface.getLastTalon(this.Id).affiche());
+          System.out.println("la dernière carte du talon est " + mInterface.getLastTalon(this.Id,this.monUnoActu).affiche());
           System.out.println();
           System.out.println("Voici votre main");
           this.main.clear();
-          for (CarteInterface c : mInterface.getMyCards(this.Id)) {
+          for (CarteInterface c : mInterface.getMyCards(this.Id,this.monUnoActu)) {
             this.main.add(c);
           }
           int i = 0;
@@ -63,7 +65,7 @@ public class RMIClient {
           int card = sc.nextInt();
           MessageInterface temp;
           if(card == -1){
-            temp = mInterface.playCard(Id,null,null);
+            temp = mInterface.playCard(Id,this.monUnoActu,null,null);
           }else{
             if(main.get(card).getCouleur().equals("Noire") && main.get(card).getSymbole().equals("couleur")){
               System.out.println("choisissez une couleure parmis, 1- Rouge, 2- Bleu, 3- Jaune, 4- Vert");
@@ -83,9 +85,9 @@ public class RMIClient {
                   myColChoice = "Vert";
                   break;
               }
-              temp = mInterface.playCard(Id,main.get(card),myColChoice);
+              temp = mInterface.playCard(Id,this.monUnoActu,main.get(card),myColChoice);
             }else{
-              temp = mInterface.playCard(Id,main.get(card),null);
+              temp = mInterface.playCard(Id,this.monUnoActu,main.get(card),null);
             }
           }
           if(temp != null){
