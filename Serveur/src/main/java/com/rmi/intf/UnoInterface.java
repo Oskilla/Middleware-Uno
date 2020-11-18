@@ -6,7 +6,7 @@ import java.rmi.RemoteException;
 
 public interface UnoInterface extends Remote {
   public void InitGame() throws RemoteException;
-  public MessageInterface JouerCarte(String id,CarteInterface c,String col,boolean aPioche) throws RemoteException;
+  public boolean JouerCarte(String id,CarteInterface c,String col,boolean aPioche) throws RemoteException;
   public void CarteJouer(JoueurInterface j,CarteInterface c,boolean pass) throws RemoteException;
   public CarteInterface peutJouer(JoueurInterface j) throws RemoteException;
   public void changeJoueur() throws RemoteException;
@@ -25,6 +25,7 @@ public interface UnoInterface extends Remote {
   public void changeSens() throws RemoteException;
   public void melangerList(List<CarteInterface> aMelanger) throws RemoteException;
   public MessageInterface getMess() throws RemoteException;
+  public void setMess(MessageInterface m) throws RemoteException;
   public void joueurPret(String id) throws RemoteException;
   public boolean tousPret() throws RemoteException;
 }

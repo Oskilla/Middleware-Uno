@@ -22,13 +22,13 @@ public class RMIClient {
       String pseudo = sc.nextLine();
       this.Id = pseudo;
       mInterface.joinGame(pseudo);
-      mess = mInterface.getMessageCommun(this.Id,this.monUnoActu);
+      mess = mInterface.getMessageCommun(this.monUnoActu);
       Thread thread = new Thread(() -> {
         while (!endThread) {
           try{
-            if(!mess.getMessage().equals(mInterface.getMessageCommun(this.Id,this.monUnoActu).getMessage())){
+            if(!mess.getMessage().equals(mInterface.getMessageCommun(this.monUnoActu).getMessage())){
               System.out.println(mess.getMessage());
-              mess = mInterface.getMessageCommun(this.Id,this.monUnoActu);
+              mess = mInterface.getMessageCommun(this.monUnoActu);
             }
           } catch (Exception e) {
           }
@@ -42,13 +42,13 @@ public class RMIClient {
       for (CarteInterface c : mInterface.getMyCards(this.Id,this.monUnoActu)) {
         this.main.add(c);
       }
-      System.out.println("c'est au tour du joueur " + mInterface.getCourant(this.Id,this.monUnoActu).getId() + " de jouer");
-      while(!mInterface.GameOver(this.Id,this.monUnoActu)){
-        if(mInterface.getCourant(this.Id,this.monUnoActu).getId().equals(pseudo)){
+      System.out.println("c'est au tour du joueur " + mInterface.getCourant(this.monUnoActu).getId() + " de jouer");
+      while(!mInterface.GameOver(this.monUnoActu)){
+        if(mInterface.getCourant(this.monUnoActu).getId().equals(pseudo)){
           System.out.println();
-          System.out.println("la couleure demandée est " + mInterface.getCouleurActu(this.Id,this.monUnoActu));
+          System.out.println("la couleure demandée est " + mInterface.getCouleurActu(this.monUnoActu));
           System.out.println();
-          System.out.println("la dernière carte du talon est " + mInterface.getLastTalon(this.Id,this.monUnoActu).affiche());
+          System.out.println("la dernière carte du talon est " + mInterface.getLastTalon(this.monUnoActu).affiche());
           System.out.println();
           System.out.println("Voici votre main");
           this.main.clear();

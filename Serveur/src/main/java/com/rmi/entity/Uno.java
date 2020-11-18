@@ -17,11 +17,11 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   private final List<String> couleurs = new ArrayList<String>(Arrays.asList("Rouge","Bleu","Jaune","Vert","Noire"));
   private final List<String> symboles = new ArrayList<String>(Arrays.asList("+2","sens","interdit","+4","couleur"));
   private List<String> idJoueursPret = new ArrayList<String>();
-  private Boolean GameOver = false;
-  private JoueurInterface courant;
+  private volatile Boolean GameOver = false;
+  private volatile JoueurInterface courant;
   private String couleurChoisie;
   private boolean sens = true; //true pour sens horraire, false pour anti-horraire.
-  private volatile MessageInterface messageCommun;
+  private MessageInterface messageCommun;
 
   public Uno(List<JoueurInterface> Listjoueurs) throws RemoteException{
     super();
@@ -84,7 +84,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
     this.courant = this.joueurs.get(0);
   }
 
-  public MessageInterface JouerCarte(String id,CarteInterface carte,String col, boolean aPioche) throws RemoteException{
+  public boolean JouerCarte(String id,CarteInterface carte,String col, boolean aPioche) throws RemoteException{
     JoueurInterface j = getJoueurByID(id);
     if(!this.GameOver){
       if(j == courant){
@@ -95,8 +95,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
         if(carte == null){
           CarteInterface cartePiocher = this.pioche.remove(0);
           j.piocher(cartePiocher);
-          this.messageCommun.setMessage(id + " ne peut pas jouer, il pioche donc une carte");
-          return new Message("");
+          return true;
         }else{
           if(j.contient(carte)){
             if(carte.getCouleur().equals("Noire")){
@@ -119,11 +118,11 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
                 }
                 this.CarteJouer(j,carte,true);
                 this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
-                return new Message("");
+                return true;
               }else{
                 this.CarteJouer(j,carte,false);
                 this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +" mais les effets ne s'appliquent pas, c'est au tour du joueur " + this.courant.getId());
-                return new Message("");
+                return true;
               }
             }else{
               if(carte.getCouleur().equals(couleurChoisie)){
@@ -132,7 +131,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
                     changeSens();
                     this.CarteJouer(j,carte,false);
                     this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
-                    return new Message("");
+                    return true;
                   }
                   if(carte.getSymbole().equals("+2")){
                     if(this.sens){
@@ -146,11 +145,11 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
                 }else{
                   this.CarteJouer(j,carte,false);
                   this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
-                  return new Message("");
+                  return true;
                 }
                 this.CarteJouer(j,carte,true);
                 this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
-                return new Message("");
+                return true;
               }else{
                 if(carte.getClassName().equals(last.getClassName())){
                   if(carte.getClassName().equals("CarteAction")){
@@ -160,7 +159,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
                         this.CarteJouer(j,carte,false);
                         this.couleurChoisie = carte.getCouleur();
                         this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
-                        return new Message("");
+                        return true;
                       }
                       if(carte.getSymbole().equals("+2")){
                         if(this.sens){
@@ -174,7 +173,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
                       this.CarteJouer(j,carte,true);
                       this.couleurChoisie = carte.getCouleur();
                       this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
-                      return new Message("");
+                      return true;
                     }
                   }
                   if(carte.getClassName().equals("CarteNumero")){
@@ -182,7 +181,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
                       this.CarteJouer(j,carte,false);
                       this.couleurChoisie = carte.getCouleur();
                       this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
-                      return new Message("");
+                      return true;
                     }
                   }
                 }
@@ -195,18 +194,20 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
     if(aPioche){
       changeJoueur();
       this.messageCommun.setMessage(id +" ne peut pas jouer, c'est au tour du joueur " + this.courant.getId());
-      return new Message("");
+      return true;
     }
-    return new Message("La carte ne peut pas être jouée");
+    return false;
   }
 
   public void CarteJouer(JoueurInterface j,CarteInterface c,boolean pass) throws RemoteException{
     this.talon.add(c);
     j.jouer(c);
     if(j.getMain().size() == 0){
+      this.messageCommun.setMessage("Le joueur " + j.getId() + " a terminé!");
       j.getLeft().setRight(j.getRight());
       j.getRight().setLeft(j.getLeft());
       if(j.getLeft().getLeft() == j.getLeft()){
+        this.messageCommun.setMessage("La partie est terminée.");
         this.GameOver = true;
         return;
       }
@@ -272,7 +273,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
 	  return joueurs.get(i);
   }
 
-  public JoueurInterface getJoueurByID(String id) throws RemoteException{
+  public synchronized JoueurInterface getJoueurByID(String id) throws RemoteException{
     for(JoueurInterface j : this.joueurs){
       if(j.getId().equals(id)){
         return j;
@@ -325,8 +326,12 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
 	  Collections.shuffle(aMelanger);
   }
 
-  public MessageInterface getMess() throws RemoteException{
+  public synchronized MessageInterface getMess() throws RemoteException{
     return this.messageCommun;
+  }
+
+  public void setMess(MessageInterface m) throws RemoteException{
+    this.messageCommun = m;
   }
 
   public void joueurPret(String id){
