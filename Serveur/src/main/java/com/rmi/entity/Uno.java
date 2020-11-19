@@ -135,7 +135,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
     if(!this.GameOver){
       if(j == courant){
         CarteInterface last = this.talon.get(this.talon.size()-1);
-        if(this.pioche.size()<=4){
+        if(this.pioche.size()<=10){
           this.talonIntoPioche();
         }
         if(carte == null){
