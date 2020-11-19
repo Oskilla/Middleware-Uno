@@ -1,3 +1,9 @@
+/**
+ * Projet Middleware-Uno
+ * Une implémentation du jeu de plateau Uno avec une architecture client / Serveur à l'aide de RMI.
+ * @authors Leveille Bastien, Lecomte Soline, Lode Gael & Perez Damien
+ */
+
 package com.rmi.server;
 
 import java.util.ArrayList;
@@ -54,6 +60,7 @@ public class RMIServer implements RMIServerInterface{
     JoueurInterface j = new Joueur(name,null,null);
     joueursAttente.add(j);
     if(joueursAttente.size() == 4){
+      this.mess.setMessage("le joueur " + name + " est entré dans la partie, la partie commence");
       UnoInterface uno = new Uno(joueursAttente);
       uno.setMess(new Message("le joueur " + name + " est entré dans la partie, la partie commence"));
       for(JoueurInterface joueurVaJouer : joueursAttente){

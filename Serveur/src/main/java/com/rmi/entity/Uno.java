@@ -1,3 +1,9 @@
+/**
+ * Projet Middleware-Uno
+ * Une implémentation du jeu de plateau Uno avec une architecture client / Serveur à l'aide de RMI.
+ * @authors Leveille Bastien, Lecomte Soline, Lode Gael & Perez Damien
+ */
+
 package com.rmi.entity;
 
 import com.rmi.intf.*;
@@ -84,8 +90,48 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
     this.courant = this.joueurs.get(0);
   }
 
+  private boolean effetCarte(JoueurInterface j,CarteInterface carte) throws RemoteException{
+    if(carte.getSymbole().equals("sens")){
+      changeSens();
+    }
+    if(carte.getSymbole().equals("+2")){
+      if(this.sens){
+        j.getRight().piocher(this.pioche.remove(0));
+        j.getRight().piocher(this.pioche.remove(0));
+      }else{
+        j.getLeft().piocher(this.pioche.remove(0));
+        j.getLeft().piocher(this.pioche.remove(0));
+      }
+      return true;
+    }
+    if(carte.getSymbole().equals("interdit")){
+      return true;
+    }
+    return false;
+  }
+
+  private void effetCarteNoire(JoueurInterface j,CarteInterface carte,String col) throws RemoteException{
+    if(carte.getSymbole().equals("couleur")){
+      this.couleurChoisie = col;
+    }
+    if(carte.getSymbole().equals("+4")){
+      if(this.sens){
+        j.getRight().piocher(this.pioche.remove(0));
+        j.getRight().piocher(this.pioche.remove(0));
+        j.getRight().piocher(this.pioche.remove(0));
+        j.getRight().piocher(this.pioche.remove(0));
+      }else{
+        j.getLeft().piocher(this.pioche.remove(0));
+        j.getLeft().piocher(this.pioche.remove(0));
+        j.getLeft().piocher(this.pioche.remove(0));
+        j.getLeft().piocher(this.pioche.remove(0));
+      }
+    }
+  }
+
   public boolean JouerCarte(String id,CarteInterface carte,String col, boolean aPioche) throws RemoteException{
     JoueurInterface j = getJoueurByID(id);
+    boolean carteValide = false;
     if(!this.GameOver){
       if(j == courant){
         CarteInterface last = this.talon.get(this.talon.size()-1);
@@ -100,94 +146,48 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
           if(j.contient(carte)){
             if(carte.getCouleur().equals("Noire")){
               if(!aPioche){
-                if(carte.getSymbole().equals("couleur")){
-                  this.couleurChoisie = col;
-                }
-                if(carte.getSymbole().equals("+4")){
-                  if(this.sens){
-                    j.getRight().piocher(this.pioche.remove(0));
-                    j.getRight().piocher(this.pioche.remove(0));
-                    j.getRight().piocher(this.pioche.remove(0));
-                    j.getRight().piocher(this.pioche.remove(0));
-                  }else{
-                    j.getLeft().piocher(this.pioche.remove(0));
-                    j.getLeft().piocher(this.pioche.remove(0));
-                    j.getLeft().piocher(this.pioche.remove(0));
-                    j.getLeft().piocher(this.pioche.remove(0));
-                  }
-                }
+                this.effetCarteNoire(j,carte,col);
                 this.CarteJouer(j,carte,true);
                 this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
-                return true;
-              }else{
-                this.CarteJouer(j,carte,false);
-                this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +" mais les effets ne s'appliquent pas, c'est au tour du joueur " + this.courant.getId());
                 return true;
               }
             }else{
               if(carte.getCouleur().equals(couleurChoisie)){
                 if(carte.getClassName().equals("CarteAction")){
-                  if(carte.getSymbole().equals("sens")){
-                    changeSens();
-                    this.CarteJouer(j,carte,false);
+                  if(this.effetCarte(j,carte)){
+                    this.CarteJouer(j,carte,true);
                     this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
                     return true;
                   }
-                  if(carte.getSymbole().equals("+2")){
-                    if(this.sens){
-                      j.getRight().piocher(this.pioche.remove(0));
-                      j.getRight().piocher(this.pioche.remove(0));
-                    }else{
-                      j.getLeft().piocher(this.pioche.remove(0));
-                      j.getLeft().piocher(this.pioche.remove(0));
-                    }
-                  }
-                }else{
-                  this.CarteJouer(j,carte,false);
-                  this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
-                  return true;
                 }
-                this.CarteJouer(j,carte,true);
-                this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
-                return true;
+                carteValide = true;
               }else{
                 if(carte.getClassName().equals(last.getClassName())){
                   if(carte.getClassName().equals("CarteAction")){
                     if(carte.getSymbole().equals(last.getSymbole())){
-                      if(carte.getSymbole().equals("sens")){
-                        changeSens();
-                        this.CarteJouer(j,carte,false);
-                        this.couleurChoisie = carte.getCouleur();
+                      this.couleurChoisie = carte.getCouleur();
+                      if(this.effetCarte(j,carte)){
+                        this.CarteJouer(j,carte,true);
                         this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
                         return true;
                       }
-                      if(carte.getSymbole().equals("+2")){
-                        if(this.sens){
-                          j.getRight().piocher(this.pioche.remove(0));
-                          j.getRight().piocher(this.pioche.remove(0));
-                        }else{
-                          j.getLeft().piocher(this.pioche.remove(0));
-                          j.getLeft().piocher(this.pioche.remove(0));
-                        }
-                      }
-                      this.CarteJouer(j,carte,true);
-                      this.couleurChoisie = carte.getCouleur();
-                      this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
-                      return true;
                     }
                   }
                   if(carte.getClassName().equals("CarteNumero")){
                     if(carte.getNumero() == last.getNumero()){
-                      this.CarteJouer(j,carte,false);
                       this.couleurChoisie = carte.getCouleur();
-                      this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
-                      return true;
+                      carteValide = true;
                     }
                   }
                 }
               }
             }
           }
+        }
+        if(carteValide){
+          this.CarteJouer(j,carte,false);
+          this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
+          return true;
         }
       }
     }

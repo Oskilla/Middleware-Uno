@@ -1,3 +1,9 @@
+/**
+ * Projet Middleware-Uno
+ * Une implémentation du jeu de plateau Uno avec une architecture client / Serveur à l'aide de RMI.
+ * @authors Leveille Bastien, Lecomte Soline, Lode Gael & Perez Damien
+ */
+ 
 package com.rmi.entity;
 
 import com.rmi.intf.CarteInterface;

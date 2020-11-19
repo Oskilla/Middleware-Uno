@@ -1,3 +1,9 @@
+/**
+ * Projet Middleware-Uno
+ * Une implémentation du jeu de plateau Uno avec une architecture client / Serveur à l'aide de RMI.
+ * @authors Leveille Bastien, Lecomte Soline, Lode Gael & Perez Damien
+ */
+
 package com.rmi.intf;
 
 import java.util.List;
@@ -25,7 +31,6 @@ public interface UnoInterface extends Remote {
   public void changeSens() throws RemoteException;
   public void melangerList(List<CarteInterface> aMelanger) throws RemoteException;
   public MessageInterface getMess() throws RemoteException;
-  public void setMess(MessageInterface m) throws RemoteException;
   public void joueurPret(String id) throws RemoteException;
   public boolean tousPret() throws RemoteException;
 }

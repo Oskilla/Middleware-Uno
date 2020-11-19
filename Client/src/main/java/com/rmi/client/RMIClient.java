@@ -1,3 +1,9 @@
+/**
+ * Projet Middleware-Uno
+ * Une implémentation du jeu de plateau Uno avec une architecture client / Serveur à l'aide de RMI.
+ * @authors Leveille Bastien, Lecomte Soline, Lode Gael & Perez Damien
+ */
+
 package com.rmi.client;
 
 import com.rmi.intf.*;
@@ -23,6 +29,7 @@ public class RMIClient {
       this.Id = pseudo;
       mInterface.joinGame(pseudo);
       mess = mInterface.getMessageCommun(this.monUnoActu);
+      System.out.println(mess.getMessage());
       Thread thread = new Thread(() -> {
         while (!endThread) {
           try{
