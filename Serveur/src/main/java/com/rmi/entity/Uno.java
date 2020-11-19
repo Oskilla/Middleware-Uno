@@ -27,7 +27,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   private volatile JoueurInterface courant;
   private String couleurChoisie;
   private boolean sens = true; //true pour sens horraire, false pour anti-horraire.
-  private MessageInterface messageCommun;
+  private volatile MessageInterface messageCommun;
 
   public Uno(List<JoueurInterface> Listjoueurs) throws RemoteException{
     super();
@@ -326,12 +326,8 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
 	  Collections.shuffle(aMelanger);
   }
 
-  public synchronized MessageInterface getMess() throws RemoteException{
+  public MessageInterface getMess() throws RemoteException{
     return this.messageCommun;
-  }
-
-  public void setMess(MessageInterface m) throws RemoteException{
-    this.messageCommun = m;
   }
 
   public void joueurPret(String id){

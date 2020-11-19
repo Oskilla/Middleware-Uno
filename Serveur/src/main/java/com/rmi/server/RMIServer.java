@@ -12,6 +12,9 @@ import java.util.List;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import java.util.AbstractCollection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -30,15 +33,8 @@ public class RMIServer implements RMIServerInterface{
     this.mess = new Message("");
   }
 
-  public MessageInterface getMessageCommun(UnoInterface u) throws RemoteException{
-    if(u != null){
-      return u.getMess();
-    }
+  public MessageInterface getMessageCommun() throws RemoteException{
     return this.mess;
-  }
-
-  public JoueurInterface getCourant(UnoInterface u) throws RemoteException{
-    return u.getCourant();
   }
 
   public UnoInterface start(String id) throws RemoteException{
@@ -62,7 +58,6 @@ public class RMIServer implements RMIServerInterface{
     if(joueursAttente.size() == 4){
       this.mess.setMessage("le joueur " + name + " est entré dans la partie, la partie commence");
       UnoInterface uno = new Uno(joueursAttente);
-      uno.setMess(new Message("le joueur " + name + " est entré dans la partie, la partie commence"));
       for(JoueurInterface joueurVaJouer : joueursAttente){
         joueurVaJouer.setUno(uno);
       }
@@ -73,40 +68,5 @@ public class RMIServer implements RMIServerInterface{
     }else{
       this.mess.setMessage("le joueur " + name + " est entré dans la partie, en attente d'autres joueurs");
     }
-  }
-
-  public MessageInterface playCard(String id,UnoInterface u,CarteInterface c,String couleur) throws RemoteException{
-    boolean carte;
-    if(c == null){
-      CarteInterface test = u.peutJouer(u.getJoueurByID(id));
-      if(test != null){
-        return new Message("La carte " + test.affiche() + " peut être jouée");
-      }else{
-        u.JouerCarte(id,c,couleur,false);
-        carte = u.JouerCarte(id,u.getCourant().getMain().get(u.getCourant().getMain().size()-1),couleur,true);
-      }
-    }else{
-      carte = u.JouerCarte(id,c,couleur,false);
-    }
-    if(!carte){
-      return new Message("La carte ne peut pas être jouée");
-    }
-    return null;
-  }
-
-  public List<CarteInterface> getMyCards(String id,UnoInterface u) throws RemoteException{
-    return u.getJoueurByID(id).getMain();
-  }
-
-  public CarteInterface getLastTalon(UnoInterface u) throws RemoteException{
-    return u.getTalon().get(u.getTalon().size()-1);
-  }
-
-  public String getCouleurActu(UnoInterface u) throws RemoteException{
-    return u.getCouleurChoisie();
-  }
-
-  public boolean GameOver(UnoInterface u) throws RemoteException{
-    return u.isGameOver();
   }
 }

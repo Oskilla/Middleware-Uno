@@ -31,7 +31,6 @@ public interface UnoInterface extends Remote {
   public void changeSens() throws RemoteException;
   public void melangerList(List<CarteInterface> aMelanger) throws RemoteException;
   public MessageInterface getMess() throws RemoteException;
-  public void setMess(MessageInterface m) throws RemoteException;
   public void joueurPret(String id) throws RemoteException;
   public boolean tousPret() throws RemoteException;
 }
