@@ -10,6 +10,7 @@ import com.rmi.client.RMIClient;
 
 public class App {
   public static void main(String[] args) throws Exception {
+    //appel du constructeur de la classe RMIClient, lancement du client
     RMIClient rmiClient = new RMIClient();
   }
 }
