@@ -24,4 +24,6 @@ public interface JoueurInterface extends Remote {
   public void montreMain() throws RemoteException;
   public UnoInterface getUno() throws RemoteException;
   public void setUno(UnoInterface u) throws RemoteException;
+  public MessageInterface getMess() throws RemoteException;
+  public void setMess(MessageInterface m) throws RemoteException;
 }

@@ -12,7 +12,5 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 public interface RMIServerInterface extends Remote{
-  public MessageInterface getMessageCommun() throws RemoteException;
-  public UnoInterface start(String id) throws RemoteException;
-  public void joinGame(String name) throws RemoteException;
+  public JoueurInterface joinGame(String name) throws RemoteException;
 }

@@ -19,7 +19,6 @@ public interface UnoInterface extends Remote {
   public boolean isGameOver() throws RemoteException;
   public JoueurInterface getCourant() throws RemoteException;
   public String getCouleurChoisie() throws RemoteException;
-  public MessageInterface getMess() throws RemoteException;
   public void joueurPret(String id) throws RemoteException;
   public boolean tousPret() throws RemoteException;
 }
