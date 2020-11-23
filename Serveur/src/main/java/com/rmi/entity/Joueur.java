@@ -114,7 +114,7 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   */
   public boolean contient(CarteInterface carte) throws RemoteException{
     for(CarteInterface c : this.main){
-      if(c.equals(carte)){
+      if(c.getNumero() == carte.getNumero() && c.getCouleur().equals(carte.getCouleur()) && c.getSymbole().equals(carte.getSymbole())){
         return true;
       }
     }
