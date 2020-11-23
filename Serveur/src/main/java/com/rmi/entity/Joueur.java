@@ -99,7 +99,7 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   */
   public CarteInterface jouer(CarteInterface carte) throws RemoteException{
     for(CarteInterface c : this.main){
-      if(c.equals(carte)){
+      if(c.getNumero() == carte.getNumero() && c.getCouleur().equals(carte.getCouleur()) && c.getSymbole().equals(carte.getSymbole())){
         this.main.remove(c);
         return c;
       }
