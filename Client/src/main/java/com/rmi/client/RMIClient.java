@@ -19,8 +19,8 @@ import java.util.Scanner;
 public class RMIClient {
   // attribut permettant d avoir les messages communs entre tout les joueurs
   private MessageInterface mess;
-  // attribut representant le uno dans lequel le joueur est present
-  private UnoInterface monUnoActu;
+  // attribut representant le joueur distant
+  private JoueurInterface moi;
   // atribut permettant d arreter le thread qui affiche les messages communs en continue
   private boolean endThread = false;
   // attribut representant l id(pseudo) du joueur
@@ -43,8 +43,8 @@ public class RMIClient {
       String pseudo = sc.nextLine();
       this.Id = pseudo;
       // appel de la methode qui permet de rejoindre des joueurs afin de lancer une partie
-      mInterface.joinGame(pseudo);
-      mess = mInterface.getMessageCommun();
+      moi = mInterface.joinGame(pseudo);
+      mess = moi.getMess();
       System.out.println(mess.getMessage());
 
       // Thread permettant d afficher les messages communs a tout les joueurs de ce uno en continue, tant que le jeu n est pas termine
@@ -52,20 +52,9 @@ public class RMIClient {
         while (!endThread) {
           try{
             String oldMessage = mess.getMessage();
-            // si le joueur n est pas deja affecte a un uno
-            if(this.monUnoActu == null){
-              // on recupere le message du serveur
-              mess = mInterface.getMessageCommun();
-              // si le message est different de celui que l on a deja
-              if(!mess.getMessage().equals(oldMessage)){
-                System.out.println(this.mess.getMessage());
-              }
-            // si le joueur est deja affecte a un uno
-            }else{
-              mess = monUnoActu.getMess();
-              if(!mess.getMessage().equals(oldMessage)){
-                System.out.println(this.mess.getMessage());
-              }
+            mess = moi.getMess();
+            if(!mess.getMessage().equals(oldMessage)){
+              System.out.println(this.mess.getMessage());
             }
           } catch (Exception e) {
             System.out.println(e);
@@ -75,25 +64,23 @@ public class RMIClient {
       thread.start();
 
       // tant que le serveur n a pas affecte de uno a ce joueur
-      while(this.monUnoActu == null){
-        this.monUnoActu = mInterface.start(this.Id);
-      }
+      while(this.moi.getUno() == null){}
 
       // le jeu commence
-      System.out.println("c'est au tour du joueur " + this.monUnoActu.getCourant().getId() + " de jouer");
+      System.out.println("c'est au tour du joueur " + this.moi.getUno().getCourant().getId() + " de jouer");
       // tant que le jeu n est pas finis
-      while(!this.monUnoActu.isGameOver()){
+      while(!this.moi.getUno().isGameOver()){
         // si le joueur est le joueur courant du uno
-        if(this.monUnoActu.getCourant().getId().equals(this.Id)){
+        if(this.moi.getUno().getCourant().getId().equals(this.Id)){
           System.out.println();
-          System.out.println("la couleur demandée est " + this.monUnoActu.getCouleurChoisie());
+          System.out.println("la couleur demandée est " + this.moi.getUno().getCouleurChoisie());
           System.out.println();
-          System.out.println("la dernière carte du talon est " + this.monUnoActu.getTalon().get(this.monUnoActu.getTalon().size()-1).affiche());
+          System.out.println("la dernière carte du talon est " + this.moi.getUno().getTalon().get(this.moi.getUno().getTalon().size()-1).affiche());
           System.out.println();
           System.out.println("Voici votre main");
           this.main.clear();
           // recuperation des cartes du joueur
-          for (CarteInterface c : this.monUnoActu.getJoueurByID(this.Id).getMain()) {
+          for (CarteInterface c : this.moi.getMain()) {
             this.main.add(c);
           }
           int i = 0;
@@ -109,14 +96,14 @@ public class RMIClient {
           // si le joueur a dis qu il ne pouvait pas jouer de carte
           if(card == -1){
             // verification qu il ne puisse vraiment pas jouer
-            CarteInterface test = this.monUnoActu.peutJouer(this.monUnoActu.getJoueurByID(this.Id));
+            CarteInterface test = this.moi.getUno().peutJouer(moi);
             if(test != null){
               System.out.println("La carte " + test.affiche() + " peut être jouée");
             }else{
               // le joueur ne peut pas jouer, il pioche
-              this.monUnoActu.JouerCarte(this.Id,null,null,false);
+              this.moi.getUno().JouerCarte(this.Id,null,null,false);
               // peut il jouer la carte qu il vient de piocher
-              carteJouee = this.monUnoActu.JouerCarte(this.Id,this.monUnoActu.getCourant().getMain().get(this.monUnoActu.getCourant().getMain().size()-1),null,true);
+              carteJouee = this.moi.getUno().JouerCarte(this.Id,this.moi.getUno().getCourant().getMain().get(this.moi.getUno().getCourant().getMain().size()-1),null,true);
             }
           }else{
             // si la carte qu il a selectione est de couleur noire et que son symbole est couleur
@@ -139,10 +126,10 @@ public class RMIClient {
                   break;
               }
               // il joue la carte couleur, noire avec la couleur qu il a choisi
-              carteJouee = this.monUnoActu.JouerCarte(this.Id,main.get(card),myColChoice,false);
+              carteJouee = this.moi.getUno().JouerCarte(this.Id,main.get(card),myColChoice,false);
             }else{
               // sinon il joue la carte sans preciser de couleur
-              carteJouee = this.monUnoActu.JouerCarte(this.Id,main.get(card),null,false);
+              carteJouee = this.moi.getUno().JouerCarte(this.Id,main.get(card),null,false);
             }
           }
           // la variable carte jouee est fausse, le joueur a donc tente de jouer une carte invalide

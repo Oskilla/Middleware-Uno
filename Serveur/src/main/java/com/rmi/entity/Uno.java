@@ -45,9 +45,6 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   private String couleurChoisie;
   // attribue representant le sens du jeu
   private boolean sens = true; //true pour sens horaire, false pour anti-horaire.
-  // attribue representant un message destine a l ensemble des joueurs ex: John a joue la carte couleur: vert, numero: 5
-  // cet attribut doit etre volatile car les joueurs doivent recuperer la valeure la plus a jour
-  private volatile MessageInterface messageCommun;
 
   /**
   * Constructeur de la class Uno
@@ -55,7 +52,6 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   * @param Listjoueurs, les joueurs qui vont participer au jeu
   */
   public Uno(List<JoueurInterface> Listjoueurs) throws RemoteException{
-    messageCommun = new Message("");
     // attribution des places dans le jeu
     for (int i=0;i<Listjoueurs.size();i++) {
       switch (i) {
@@ -218,7 +214,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
                 this.effetCarteNoire(j,carte,col);
                 // les effets s appliquent, le joueur d apres saute son tour (carteJouer(X,X,true))
                 this.CarteJouer(j,carte,true);
-                this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
+                this.sendAll(new Message(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId()));
                 return true;
               }
               carteValide = true;
@@ -230,7 +226,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
                   // je verifie selon l effet si le joueur d apres saute son tour ou pas
                   if(this.effetCarte(j,carte)){
                     this.CarteJouer(j,carte,true);
-                    this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
+                    this.sendAll(new Message(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId()));
                     return true;
                   }
                 }
@@ -248,9 +244,10 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
                       // je verifie selon l effet si le joueur d apres saute son tour ou pas
                       if(this.effetCarte(j,carte)){
                         this.CarteJouer(j,carte,true);
-                        this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
+                        this.sendAll(new Message(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId()));
                         return true;
                       }
+                      carteValide = true;
                     }
                   }
                   // si la carte est une carte numero
@@ -271,9 +268,9 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
         if(carteValide){
           this.CarteJouer(j,carte,false);
           if(carte.getCouleur().equals("Noire")){
-            this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +" mais les effets ne s'appliquent pas, c'est au tour du joueur " + this.courant.getId());
+            this.sendAll(new Message(id + " a joué la carte " + carte.affiche() +" mais les effets ne s'appliquent pas, c'est au tour du joueur " + this.courant.getId()));
           }else{
-            this.messageCommun.setMessage(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId());
+            this.sendAll(new Message(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId()));
           }
           return true;
         }
@@ -283,7 +280,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
     if(aPioche){
       // on passe au joueur suivant
       changeJoueur();
-      this.messageCommun.setMessage(id +" ne peut pas jouer, c'est au tour du joueur " + this.courant.getId());
+      this.sendAll(new Message(id +" ne peut pas jouer, c'est au tour du joueur " + this.courant.getId()));
       return true;
     }
     return false;
@@ -300,13 +297,13 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
     j.jouer(c);
     // si le joueur n a plus de cartes en main
     if(j.getMain().size() == 0){
-      this.messageCommun.setMessage("Le joueur " + j.getId() + " a terminé!");
+      this.sendAll(new Message("Le joueur " + j.getId() + " a terminé!"));
       // on retire le joueur du cercle, mais pas du tableau des joueurs afin qu il recoive toujours les messages communs
       j.getLeft().setRight(j.getRight());
       j.getRight().setLeft(j.getLeft());
       // si apres la transformation le joueur se retrouve seul dans le cercle alors la partie est finie
       if(j.getLeft().getLeft() == j.getLeft()){
-        this.messageCommun.setMessage("La partie est terminée.");
+        this.sendAll(new Message("La partie est terminée."));
         this.GameOver = true;
         return;
       }
@@ -442,14 +439,6 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   }
 
   /**
-  * Accesseur de l attribut messageCommun
-  * @return l attribut messageCommun
-  */
-  public MessageInterface getMess() throws RemoteException{
-    return this.messageCommun;
-  }
-
-  /**
   * Methode permettant de specifier qu un des joueurs est pret
   * Cette methode doit etre en synchronized car le tableau n etant pas Thread safe, il ne faut pas que deux joueurs appelent cette methode en conccurence
   * @param id, l identifiant d un des joueur
@@ -457,6 +446,12 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   public synchronized void joueurPret(String id){
     if(!this.idJoueursPret.contains(id)){
       this.idJoueursPret.add(id);
+    }
+  }
+
+  private void sendAll(MessageInterface m) throws RemoteException{
+    for(JoueurInterface j : this.joueurs){
+      j.setMess(m);
     }
   }
 

@@ -9,6 +9,7 @@ package com.rmi.entity;
 import com.rmi.intf.CarteInterface;
 import com.rmi.intf.UnoInterface;
 import com.rmi.intf.JoueurInterface;
+import com.rmi.intf.MessageInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,8 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   private List<CarteInterface> main = new ArrayList<CarteInterface>();
   // attribut representant le uno auquel le joueur est attribue
   private UnoInterface myUno;
+  // attribut representant le message lie au joueur
+  private volatile MessageInterface myMessage = new Message("");
 
   /**
   * Constructeur de la class Joueur
@@ -152,5 +155,13 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   */
   public void setUno(UnoInterface u) throws RemoteException{
     this.myUno = u;
+  }
+
+  public MessageInterface getMess() throws RemoteException{
+    return this.myMessage;
+  }
+
+  public void setMess(MessageInterface m) throws RemoteException{
+    this.myMessage = m;
   }
 }
