@@ -212,10 +212,12 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
               // si le joueur ne vient pas de piocher parce qu il ne pouvait pas jouer de carte
               if(!aPioche){
                 this.effetCarteNoire(j,carte,col);
-                // les effets s appliquent, le joueur d apres saute son tour (carteJouer(X,X,true))
-                this.CarteJouer(j,carte,true);
-                this.sendAll(new Message(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId()));
-                return true;
+                // les effets s appliquent, le joueur d apres saute son tour (carteJouer(X,X,true) si la carte est un +4)
+                if(carte.getSymbole().equals("+4")){
+                  this.CarteJouer(j,carte,true);
+                  this.sendAll(new Message(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId()));
+                  return true;
+                }
               }
               carteValide = true;
             }else{

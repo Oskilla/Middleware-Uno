@@ -28,6 +28,14 @@ public class RMIClient {
   // attribut representant l ensemble des cartes composant la main du joueur
   private List<CarteInterface> main = new ArrayList<CarteInterface>();
 
+  private void getMessage(){
+    String oldMessage = mess.getMessage();
+    mess = moi.getMess();
+    if(!mess.getMessage().equals(oldMessage)){
+      System.out.println(this.mess.getMessage());
+    }
+  }
+
   /**
   * Constructeur de la classe RMICLient
   * appel les objets remote et interargit avec eux
@@ -46,30 +54,15 @@ public class RMIClient {
       moi = mInterface.joinGame(pseudo);
       mess = moi.getMess();
       System.out.println(mess.getMessage());
-
-      // Thread permettant d afficher les messages communs a tout les joueurs de ce uno en continue, tant que le jeu n est pas termine
-      Thread thread = new Thread(() -> {
-        while (!endThread) {
-          try{
-            String oldMessage = mess.getMessage();
-            mess = moi.getMess();
-            if(!mess.getMessage().equals(oldMessage)){
-              System.out.println(this.mess.getMessage());
-            }
-          } catch (Exception e) {
-            System.out.println(e);
-          }
-        }
-      });
-      thread.start();
-
       // tant que le serveur n a pas affecte de uno a ce joueur
-      while(this.moi.getUno() == null){}
-
+      while(this.moi.getUno() == null){
+        getMessage();
+      }
       // le jeu commence
       System.out.println("c'est au tour du joueur " + this.moi.getUno().getCourant().getId() + " de jouer");
       // tant que le jeu n est pas finis
       while(!this.moi.getUno().isGameOver()){
+        getMessage();
         // si le joueur est le joueur courant du uno
         if(this.moi.getUno().getCourant().getId().equals(this.Id)){
           System.out.println();
