@@ -26,4 +26,6 @@ public interface JoueurInterface extends Remote {
   public void setUno(UnoInterface u) throws RemoteException;
   public MessageInterface getMess() throws RemoteException;
   public void setMess(MessageInterface m) throws RemoteException;
+  public void incrementPoint(int n) throws RemoteException;
+  public int getPoint() throws RemoteException;
 }

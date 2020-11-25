@@ -11,9 +11,6 @@ import java.util.List;
 
 import java.rmi.RemoteException;
 
-import java.util.AbstractCollection;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import com.rmi.entity.Uno;
 import com.rmi.entity.Joueur;
 import com.rmi.entity.Message;
@@ -30,8 +27,6 @@ import com.rmi.intf.RMIServerInterface;
 public class RMIServer implements RMIServerInterface{
   // attribut representant la liste des joueurs en attente, c.a.d ceux qui ne sont pas encore 4
   private List<JoueurInterface> joueursAttente;
-  // attribut representant la liste des unos qui sont crees mais dont tout les joueurs n ont pas encore repondu, cette liste est thread safe
-  private AbstractCollection<UnoInterface> UnoPret;
 
   /**
   * Constructeur de la class RMIServer
@@ -39,7 +34,6 @@ public class RMIServer implements RMIServerInterface{
   */
   public RMIServer() throws RemoteException{
     this.joueursAttente = new ArrayList<JoueurInterface>();
-    this.UnoPret = new ConcurrentLinkedQueue<UnoInterface>();
   }
 
   /**
@@ -59,8 +53,6 @@ public class RMIServer implements RMIServerInterface{
       }
       uno.InitGame();
       this.joueursAttente.clear();
-      // Thread safe
-      this.UnoPret.add(uno);
       System.out.println("une partie commence");
     }else{
       this.sendAll(new Message("le joueur " + name + " est entré dans la partie, en attente d'autres joueurs"));

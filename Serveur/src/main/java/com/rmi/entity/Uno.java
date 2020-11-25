@@ -34,8 +34,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   private final List<String> couleurs = new ArrayList<String>(Arrays.asList("Rouge","Bleu","Jaune","Vert","Noire"));
   // attribut representant tout les symboles present dans le jeu
   private final List<String> symboles = new ArrayList<String>(Arrays.asList("+2","sens","interdit","+4","couleur"));
-  // attribut permettant de recenser tout les joueurs qui ont manifestes leurs presence une fois que le uno a ete cree (afin que le RMI serveur puisse supprimer le uno de la liste des uno en cours d attente)
-  // cet attribut n a pas besin d etre volatile car le dernier joueur sera le seul a acceder a la methode tousPret()
+  // attribut permettant de recenser les joueurs qui souhaitent relancer une partie
   private List<String> idJoueursPret = new ArrayList<String>();
   // attribut representant la fin du jeu
   private Boolean GameOver = false;
@@ -45,6 +44,8 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   private String couleurChoisie;
   // attribue representant le sens du jeu
   private boolean sens = true; //true pour sens horaire, false pour anti-horaire.
+  // atribut representant le nombre de joueurs n ayant pas termine la partie
+  private int ontTermine = 0;
 
   /**
   * Constructeur de la class Uno
@@ -303,10 +304,22 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
       // on retire le joueur du cercle, mais pas du tableau des joueurs afin qu il recoive toujours les messages communs
       j.getLeft().setRight(j.getRight());
       j.getRight().setLeft(j.getLeft());
-      // si apres la transformation le joueur se retrouve seul dans le cercle alors la partie est finie
-      if(j.getLeft().getLeft() == j.getLeft()){
+      ++this.ontTermine;
+      switch(this.ontTermine){
+        case 1:
+          j.incrementPoint(300);
+          break;
+        case 2:
+          j.incrementPoint(200);
+          break;
+        case 3:
+          j.incrementPoint(100);
+      }
+      // si le nombre de joueurs qui ont finis est egale a 3
+      if(this.ontTermine == 3){
         this.sendAll(new Message("La partie est terminée."));
         this.GameOver = true;
+        j.getLeft().incrementPoint(50);
         return;
       }
     }
@@ -466,6 +479,26 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
       return true;
     }
     return false;
+  }
+
+  public void resetPartie() throws RemoteException{
+    this.talonIntoPioche();
+    this.GameOver = false;
+    this.sens = true;
+    this.ontTermine = 0;
+    for(JoueurInterface j : this.joueurs){
+      j.getMain().clear();
+      j.setMess(new Message(""));
+    }
+    this.InitGame();
+  }
+
+  public List<String> pointsFin() throws RemoteException{
+    List<String> result = new ArrayList<String>();
+    for(JoueurInterface j : this.joueurs){
+      result.add(j.getId() + " a " + j.getPoint() + " points");
+    }
+    return result;
   }
 
 }

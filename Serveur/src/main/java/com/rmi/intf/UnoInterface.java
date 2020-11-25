@@ -21,4 +21,6 @@ public interface UnoInterface extends Remote {
   public String getCouleurChoisie() throws RemoteException;
   public void joueurPret(String id) throws RemoteException;
   public boolean tousPret() throws RemoteException;
+  public void resetPartie() throws RemoteException;
+  public List<String> pointsFin() throws RemoteException;
 }

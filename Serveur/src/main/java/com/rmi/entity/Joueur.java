@@ -33,6 +33,8 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   private UnoInterface myUno;
   // attribut representant le message lie au joueur
   private volatile MessageInterface myMessage = new Message("");
+  // attribut representant le nombre de points des joueurs
+  private int points = 0;
 
   /**
   * Constructeur de la class Joueur
@@ -163,5 +165,13 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
 
   public void setMess(MessageInterface m) throws RemoteException{
     this.myMessage = m;
+  }
+
+  public void incrementPoint(int n){
+    this.points += n;
+  }
+
+  public int getPoint(){
+    return this.points;
   }
 }
