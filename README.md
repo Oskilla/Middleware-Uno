@@ -1,4 +1,4 @@
-pour compiler le serveurou le client placez-vous dans le chemin suivant src/main/java/com/rmi et effectuez la commande suivante :
+pour compiler le serveur ou le client placez-vous dans le chemin suivant src/main/java/com/rmi et effectuez la commande suivante :
 <code>javac -cp com.rmi.* \*\/*.java</code>
 pour éxécuter le serveur ou le client retournez dans le dossier src/main/java et faites:
 <code>java com.rmi.app.App</code>
