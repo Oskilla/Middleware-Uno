@@ -21,18 +21,20 @@ public class RMIClient {
   private MessageInterface mess;
   // attribut representant le joueur distant
   private JoueurInterface moi;
-  // atribut permettant d arreter le thread qui affiche les messages communs en continue
-  private boolean endThread = false;
   // attribut representant l id(pseudo) du joueur
   private String Id;
   // attribut representant l ensemble des cartes composant la main du joueur
   private List<CarteInterface> main = new ArrayList<CarteInterface>();
 
   private void getMessage(){
-    String oldMessage = mess.getMessage();
-    mess = moi.getMess();
-    if(!mess.getMessage().equals(oldMessage)){
-      System.out.println(this.mess.getMessage());
+    try {
+      String oldMessage = mess.getMessage();
+      mess = moi.getMess();
+      if(!mess.getMessage().equals(oldMessage)){
+        System.out.println(this.mess.getMessage());
+      }
+    } catch(Exception e) {
+      System.out.println(e);
     }
   }
 
@@ -131,9 +133,6 @@ public class RMIClient {
           }
         }
       }
-      // arret du Thread pour les messages communs
-      this.endThread = true;
-      thread.join();
       System.out.println("Le jeu est terminé !");
 
     } catch (Exception e) {

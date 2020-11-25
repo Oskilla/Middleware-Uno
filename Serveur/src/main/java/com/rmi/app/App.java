@@ -20,8 +20,7 @@ public class App {
       // creation du registry sur le port souhaite
       LocateRegistry.createRegistry(1099);
       // on export un nouvel rmi serveur pour les clients
-      RMIServerInterface rmiServ = (RMIServerInterface) UnicastRemoteObject
-        .exportObject(new RMIServer(), 1099);
+      RMIServerInterface rmiServ = (RMIServerInterface) UnicastRemoteObject.exportObject(new RMIServer(), 1099);
       // on bind l objet exporte a l adresse du serveur /Server_1099
       Naming.bind("Server_1099", rmiServ);
       System.out.println("\n----------------------------------");
