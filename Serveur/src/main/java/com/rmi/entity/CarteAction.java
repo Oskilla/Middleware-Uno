@@ -65,12 +65,4 @@ public class CarteAction extends UnicastRemoteObject implements CarteInterface {
     return "CarteAction";
   }
 
-  /**
-  * Methode affichant la carte
-  * @return les attributs de la carte au format user-friendly
-  */
-  public String affiche(){
-    return "couleur: " + this.getCouleur() + " symbole: " + this.symbole;
-  }
-
 }

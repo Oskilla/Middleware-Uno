@@ -40,6 +40,16 @@ public class CarteNumero extends UnicastRemoteObject implements CarteInterface {
   }
 
   /**
+   * Accesseur de l attribut symbole
+   * methode imposee par l interface CarteInterface
+   * @return l attribut symbole de la carte
+   * @deprecated ne sert que pour l objet CarteAction
+   */
+  public String getSymbole(){
+    return "symbole";
+  }
+
+  /**
   * Accesseur de l attribut numero
   * @return l attribut numero de la carte
   */
@@ -48,28 +58,10 @@ public class CarteNumero extends UnicastRemoteObject implements CarteInterface {
   }
 
   /**
-  * Accesseur de l attribut symbole
-  * methode imposee par l interface CarteInterface
-  * @return l attribut symbole de la carte
-  * @deprecated ne sert que pour l objet CarteAction
-  */
-  public String getSymbole(){
-    return "symbole";
-  }
-
-  /**
   * Accesseur au type de la carte
   * @return le type de la carte
   */
   public String getClassName(){
     return "CarteNumero";
-  }
-
-  /**
-  * Methode affichant la carte
-  * @return les attributs de la carte au format user-friendly
-  */
-  public String affiche(){
-    return "couleur: " + this.getCouleur() + " numero: " + this.numero;
   }
 }

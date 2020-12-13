@@ -7,7 +7,6 @@
 package com.rmi.app;
 
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.Naming;
 
@@ -18,11 +17,11 @@ public class App {
   public static void main(String[] args) throws Exception {
     try {
       // creation du registry sur le port souhaite
-      LocateRegistry.createRegistry(1099);
+      LocateRegistry.createRegistry(Integer.parseInt(args[0]));
       // on export un nouvel rmi serveur pour les clients
-      RMIServerInterface rmiServ = (RMIServerInterface) UnicastRemoteObject.exportObject(new RMIServer(), 1099);
+      RMIServerInterface rmiServ = (RMIServerInterface) UnicastRemoteObject.exportObject(new RMIServer(),Integer.parseInt(args[0]));
       // on bind l objet exporte a l adresse du serveur /Server_1099
-      Naming.bind("Server_1099", rmiServ);
+      Naming.bind("Server", rmiServ);
       System.out.println("\n----------------------------------");
       System.out.println("Welcome to the RMI Server !");
       System.out.println("----------------------------------\n");
