@@ -13,7 +13,5 @@ public interface CarteInterface extends Remote{
   public String getCouleur() throws RemoteException;
   public abstract String getSymbole() throws RemoteException;
   public abstract int getNumero() throws RemoteException;
-  public abstract String affiche() throws RemoteException;
   public abstract String getClassName() throws RemoteException;
-
 }

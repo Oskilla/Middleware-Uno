@@ -7,9 +7,9 @@
 package com.rmi.entity;
 
 import com.rmi.intf.CarteInterface;
+import com.rmi.intf.ClientInterface;
 import com.rmi.intf.UnoInterface;
 import com.rmi.intf.JoueurInterface;
-import com.rmi.intf.MessageInterface;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +17,7 @@ import java.util.List;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
 
-/**
- * Classe representant un joueur, un joueur joue au uno avec d autres joueurs et possede des cartes de ce dernier
- */
+// Classe representant un joueur, un joueur joue au uno avec d autres joueurs et possede des cartes de ce dernier
 public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   // attribut representant l identifiant(pseudo) du joueur
   private String identifiant;
@@ -31,8 +29,12 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   private List<CarteInterface> main = new ArrayList<CarteInterface>();
   // attribut representant le uno auquel le joueur est attribue
   private UnoInterface myUno;
-  // attribut representant le message lie au joueur
-  private volatile MessageInterface myMessage = new Message("");
+  // attribut representant le nombre de points des joueurs
+  private int points = 0;
+  // attribut representant le clien (graphique) lie au joueur cote serveur
+  private ClientInterface client;
+  // booleen indiquant si le joueur a joue pendant son tour
+  private boolean aJoue = false;
 
   /**
   * Constructeur de la class Joueur
@@ -40,19 +42,32 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   * @param id, l identifiant du joueur
   * @param l, le joueur a gauche
   * @param r, le joueur a droite
+   * @param c, le client (graphique) associe au joueur
   */
-  public Joueur(String id,JoueurInterface l, JoueurInterface r) throws RemoteException{
+  public Joueur(String id,JoueurInterface l, JoueurInterface r,ClientInterface c) throws RemoteException{
     this.identifiant = id;
     this.left = l;
     this.right = r;
+    this.client = c;
   }
 
   /**
-  * Acceseur de l attribut id
-  * @return l identifiant du joueur
-  */
+   * Acceseur de l attribut id
+   * @return l identifiant du joueur
+   */
   public String getId(){
     return this.identifiant;
+  }
+
+  /**
+   * Methode permettant de savoir si c est a ce joueur de jouer
+   * Cette methode est appelee par le uno du joueur afin de lui indiquer que c est son tour de jouer
+   * Le joueur vas ainsi indiquer a son client graphique qu il peut jouer et vas attendre qu il le fasse
+   */
+  public void joueurCourant() throws InterruptedException, RemoteException {
+     this.client.setPeutJouer();
+     while(!this.aJoue) {Thread.sleep(10);}
+     this.aJoue = false;
   }
 
   /**
@@ -111,6 +126,14 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   }
 
   /**
+   * Methode permettant d ajouter une carte dans la main du joueur
+   * @param c, la carte a ajouter
+   */
+  public void piocher(CarteInterface c){
+    this.main.add(c);
+  }
+
+  /**
   * Methode permettant de verifier si une carte est contenue dans la main du joueur
   * @param carte, la carte a verifier
   * @return true si la carte est contenue dans la main du joueur, false sinon
@@ -125,27 +148,10 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   }
 
   /**
-  * Methode permettant d ajouter une carte dans la main du joueur
-  * @param c, la carte a ajouter
-  */
-  public void piocher(CarteInterface c){
-    this.main.add(c);
-  }
-
-  /**
-  * Methode permettant d afficher les cartes du joueur de facon user-friendly
-  */
-  public void montreMain() throws RemoteException{
-    for(CarteInterface c : this.main){
-      System.out.println(c.affiche());
-    }
-  }
-
-  /**
   * Acceseur de l attribut myUno
   * @return le uno auquel le joueur est associe, null si le joueur n est pas encore associe a un uno
   */
-  public UnoInterface getUno() throws RemoteException{
+  public UnoInterface getUno() {
     return this.myUno;
   }
 
@@ -153,15 +159,23 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   * Setter de l attribut myUno
   * @param u, le uno auquel le joueur est associe
   */
-  public void setUno(UnoInterface u) throws RemoteException{
+  public void setUno(UnoInterface u) {
     this.myUno = u;
   }
 
-  public MessageInterface getMess() throws RemoteException{
-    return this.myMessage;
+  /**
+   * Setter de l attribut aJoue
+   * methode appelee par le uno du joueur afin d indiquer a ce dernier que c est son tour de jouer
+   */
+  public void setAJoue() {
+	this.aJoue = true;
   }
 
-  public void setMess(MessageInterface m) throws RemoteException{
-    this.myMessage = m;
+  /**
+   * Acceseur de l attribut client
+   * @return le client
+   */
+  public ClientInterface getClient() {
+    return this.client;
   }
 }

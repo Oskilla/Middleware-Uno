@@ -11,9 +11,7 @@ import com.rmi.intf.CarteInterface;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
 
-/**
- * Classe representant une CarteAction, une CarteAction est une carte ayant un effet ex: carte(couleur:vert,symbole:interdit)
- */
+// Classe representant une CarteAction, une CarteAction est une carte ayant un effet ex: carte(couleur:vert,symbole:interdit)
 public class CarteAction extends UnicastRemoteObject implements CarteInterface {
   // attribut representant le symbole (effet) de la carte
   private String symbole;
@@ -63,14 +61,6 @@ public class CarteAction extends UnicastRemoteObject implements CarteInterface {
   */
   public String getClassName(){
     return "CarteAction";
-  }
-
-  /**
-  * Methode affichant la carte
-  * @return les attributs de la carte au format user-friendly
-  */
-  public String affiche(){
-    return "couleur: " + this.getCouleur() + " symbole: " + this.symbole;
   }
 
 }

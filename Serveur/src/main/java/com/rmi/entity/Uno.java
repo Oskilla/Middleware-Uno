@@ -7,9 +7,11 @@
 package com.rmi.entity;
 
 import com.rmi.intf.CarteInterface;
+import com.rmi.intf.ClientInterface;
 import com.rmi.intf.JoueurInterface;
-import com.rmi.intf.MessageInterface;
 import com.rmi.intf.UnoInterface;
+
+import java.io.IOException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,17 +36,16 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   private final List<String> couleurs = new ArrayList<String>(Arrays.asList("Rouge","Bleu","Jaune","Vert","Noire"));
   // attribut representant tout les symboles present dans le jeu
   private final List<String> symboles = new ArrayList<String>(Arrays.asList("+2","sens","interdit","+4","couleur"));
-  // attribut permettant de recenser tout les joueurs qui ont manifestes leurs presence une fois que le uno a ete cree (afin que le RMI serveur puisse supprimer le uno de la liste des uno en cours d attente)
-  // cet attribut n a pas besin d etre volatile car le dernier joueur sera le seul a acceder a la methode tousPret()
+  // attribut permettant de recenser les joueurs qui souhaitent relancer une partie
   private List<String> idJoueursPret = new ArrayList<String>();
   // attribut representant la fin du jeu
   private Boolean GameOver = false;
-  // attribut representant le joueur a qui c est le tour de jouer, cet attribut doit etre volatile pour que le joueur dont c est le tour, n ai pas une fause valeure
-  private volatile JoueurInterface courant;
+  // attribut representant le joueur dont c est le tour de jouer
+  private JoueurInterface courant;
   // attribue representant la couleur actuellement demandee
   private String couleurChoisie;
   // attribue representant le sens du jeu
-  private boolean sens = true; //true pour sens horaire, false pour anti-horaire.
+  private boolean sens = false; // false pour horaire
 
   /**
   * Constructeur de la class Uno
@@ -54,60 +55,55 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   public Uno(List<JoueurInterface> Listjoueurs) throws RemoteException{
     // attribution des places dans le jeu
     for (int i=0;i<Listjoueurs.size();i++) {
-      switch (i) {
-        case 0:
-          Listjoueurs.get(i).setRight(Listjoueurs.get(i+1));
-          break;
-        default:
-          if(i == Listjoueurs.size()-1){
-            Listjoueurs.get(i).setLeft(Listjoueurs.get(i-1));
-            // le dernier a pour voisin de droite le premier
-            Listjoueurs.get(i).setRight(Listjoueurs.get(0));
-            // le premier a pour voisin de gauche le dernier
-            Listjoueurs.get(0).setLeft(Listjoueurs.get(i));
-          }else{
-            Listjoueurs.get(i).setLeft(Listjoueurs.get(i-1));
-            Listjoueurs.get(i).setRight(Listjoueurs.get(i+1));
-          }
-          break;
-      }
       this.joueurs.add(Listjoueurs.get(i));
     }
     // creation des cartes composant le jeu
-    for(int j=0;j<couleurs.size()-1;j++){
+    for(int j=0;j<this.couleurs.size()-1;j++){
       // pour chaque couleur
       for(int z=0;z<10;z++){
-        CarteNumero carte = new CarteNumero(couleurs.get(j),z);
+        CarteNumero carte = new CarteNumero(this.couleurs.get(j),z);
         if(z != 0){
           // je creee deux cartes du meme numero sauf pour le numero 0
-          CarteNumero carte2 = new CarteNumero(couleurs.get(j),z);
+          CarteNumero carte2 = new CarteNumero(this.couleurs.get(j),z);
           this.pioche.add(carte2);
         }
         this.pioche.add(carte);
       }
       for (int m=0;m<3;m++){
         // je creee deux cartes actions de meme symbole par couleur
-        CarteAction carteAction = new CarteAction(couleurs.get(j),symboles.get(m));
-        CarteAction carteAction2 = new CarteAction(couleurs.get(j),symboles.get(m));
+        CarteAction carteAction = new CarteAction(this.couleurs.get(j),this.symboles.get(m));
+        CarteAction carteAction2 = new CarteAction(this.couleurs.get(j),this.symboles.get(m));
         this.pioche.add(carteAction);
         this.pioche.add(carteAction2);
       }
     }
     for(int h=0;h<4;h++){
       // je creee les 8 cartes joker
-      CarteAction carteJoker = new CarteAction(couleurs.get(couleurs.size()-1),symboles.get(symboles.size()-2));
-      CarteAction carteJoker2 = new CarteAction(couleurs.get(couleurs.size()-1),symboles.get(symboles.size()-1));
+      CarteAction carteJoker = new CarteAction(this.couleurs.get(this.couleurs.size()-1),this.symboles.get(this.symboles.size()-2));
+      CarteAction carteJoker2 = new CarteAction(this.couleurs.get(this.couleurs.size()-1),this.symboles.get(this.symboles.size()-1));
       this.pioche.add(carteJoker);
       this.pioche.add(carteJoker2);
     }
+    // Thread qui vas attendre que tout les joueurs soient pret avant d initialiser la partie
+    // cela est neccessaire car le le uno est cree avant que le dernier client graphique ne recoive son joueur
+    Thread t = new Thread(() -> {
+        try {
+          while(!this.tousPret()){Thread.sleep(10);}
+          this.InitGame();
+          Thread.currentThread().join();
+        } catch (InterruptedException | IOException e) {
+          e.printStackTrace();
+        }
+    });
+    t.start();
   }
 
   /**
   * Methode initialisant le jeu, c est ici que les joueurs vont recevoir leurs cartes et que le talon vas etre selectionne
   */
-  public void InitGame() throws RemoteException{
+  private void InitGame() throws IOException {
     // on melange la pioche
-	  this.melangerList(this.pioche);
+    this.melangerList(this.pioche);
     for(JoueurInterface j : this.joueurs){
       for(int i=0;i<7;i++){
         // on attribue 7 cartes par joueurs en les retirant de la pioche
@@ -122,6 +118,26 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
     this.couleurChoisie = c.getCouleur();
     this.talon.add(c);
     this.courant = this.joueurs.get(0);
+    // ces Threads seront en concurrence sur l objet uno (this), cela permettra d indiquer au joueur dont c est le tour de jouer
+    for(JoueurInterface joue : this.joueurs){
+      Thread t = new Thread(() -> {
+        try {
+          // tant que la partie n est pas finie
+          while (!this.GameOver){
+            synchronized (this) {
+              // si ce n est pas son tour le thread se met en wait
+              this.getCourant(joue);
+            }
+          }
+          Thread.currentThread().join();
+        } catch (IOException | InterruptedException e) {
+          e.printStackTrace();
+        }
+      });
+      t.start();
+    }
+    // a la fin de l initialisation on envoie les donnees a tout les clients graphiques afin que le visuel soit a jour
+    this.sendAll();
   }
 
   /**
@@ -158,10 +174,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   * @param col, la couleur a changer si la carte possede le symbole couleur
   */
   private void effetCarteNoire(JoueurInterface j,CarteInterface carte,String col) throws RemoteException{
-    if(carte.getSymbole().equals("couleur")){
-      // on change la couleur
-      this.couleurChoisie = col;
-    }
+    this.couleurChoisie = col;
     if(carte.getSymbole().equals("+4")){
       // le joueur suivant pioche 4 cartes
       if(this.sens){
@@ -186,12 +199,12 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   * @param aPioche, booleen permettant de specifier si le joueur vient de piocher une carte et est en train de jouer la carte piochee
   * @return true si le Joueur a pu jouer sa carte, false sinon
   */
-  public boolean JouerCarte(String id,CarteInterface carte,String col, boolean aPioche) throws RemoteException{
+  public boolean JouerCarte(String id,CarteInterface carte,String col, boolean aPioche) throws IOException {
     // on recupere le joueur
-    JoueurInterface j = getJoueurByID(id);
+    JoueurInterface j = this.getJoueurByID(id);
     boolean carteValide = false;
     if(!this.GameOver){
-      if(j == courant){
+      if(j == this.courant){
         // si je suis le joueur courant, je recupere la derniere carte du talon
         CarteInterface last = this.talon.get(this.talon.size()-1);
         // si la pioche ne contient plus que 10 cartes je remplis la pioche avec le talon
@@ -200,33 +213,32 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
         }
         // si le joueur ne peut pas jouer
         if(carte == null){
-          // il pioche
-          CarteInterface cartePiocher = this.pioche.remove(0);
-          j.piocher(cartePiocher);
-          return true;
+          if(!aPioche){
+            // il pioche s il ne vient pas de piocher
+            CarteInterface cartePiocher = this.pioche.remove(0);
+            j.piocher(cartePiocher);
+            // on envoie l information a tout les joueurs
+            this.sendAll();
+          }
         }else{
           // si le joueur possede bien la carte qu il veut jouer
           if(j.contient(carte)){
             // si la carte est de couleur noire
             if(carte.getCouleur().equals("Noire")){
-              // si le joueur ne vient pas de piocher parce qu il ne pouvait pas jouer de carte
-              if(!aPioche){
-                this.effetCarteNoire(j,carte,col);
-                // les effets s appliquent, le joueur d apres saute son tour (carteJouer(X,X,true))
+              this.effetCarteNoire(j,carte,col);
+              if(carte.getSymbole().equals("+4")){
                 this.CarteJouer(j,carte,true);
-                this.sendAll(new Message(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId()));
                 return true;
               }
               carteValide = true;
             }else{
               // si la carte n est pas noire, mais elle est de la meme couleur que la couleur demandee
-              if(carte.getCouleur().equals(couleurChoisie)){
+              if(carte.getCouleur().equals(this.couleurChoisie)){
                 // si c est une carte action
                 if(carte.getClassName().equals("CarteAction")){
                   // je verifie selon l effet si le joueur d apres saute son tour ou pas
                   if(this.effetCarte(j,carte)){
                     this.CarteJouer(j,carte,true);
-                    this.sendAll(new Message(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId()));
                     return true;
                   }
                 }
@@ -244,7 +256,6 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
                       // je verifie selon l effet si le joueur d apres saute son tour ou pas
                       if(this.effetCarte(j,carte)){
                         this.CarteJouer(j,carte,true);
-                        this.sendAll(new Message(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId()));
                         return true;
                       }
                       carteValide = true;
@@ -267,21 +278,16 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
         // si la carte est valide alors le joueur la joue et le joueur d apres ne saute pas son tour
         if(carteValide){
           this.CarteJouer(j,carte,false);
-          if(carte.getCouleur().equals("Noire")){
-            this.sendAll(new Message(id + " a joué la carte " + carte.affiche() +" mais les effets ne s'appliquent pas, c'est au tour du joueur " + this.courant.getId()));
-          }else{
-            this.sendAll(new Message(id + " a joué la carte " + carte.affiche() +", c'est au tour du joueur " + this.courant.getId()));
-          }
+          return true;
+        }
+        // si le joueur vient de piocher et que sa carte ne peut pas etre jouee
+        if(aPioche){
+          // on passe au joueur suivant
+          this.changeJoueur();
+          j.setAJoue();
           return true;
         }
       }
-    }
-    // si le joueur vient de piocher et que sa carte ne peut pas etre jouee
-    if(aPioche){
-      // on passe au joueur suivant
-      changeJoueur();
-      this.sendAll(new Message(id +" ne peut pas jouer, c'est au tour du joueur " + this.courant.getId()));
-      return true;
     }
     return false;
   }
@@ -297,16 +303,31 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
     j.jouer(c);
     // si le joueur n a plus de cartes en main
     if(j.getMain().size() == 0){
-      this.sendAll(new Message("Le joueur " + j.getId() + " a terminé!"));
-      // on retire le joueur du cercle, mais pas du tableau des joueurs afin qu il recoive toujours les messages communs
-      j.getLeft().setRight(j.getRight());
-      j.getRight().setLeft(j.getLeft());
-      // si apres la transformation le joueur se retrouve seul dans le cercle alors la partie est finie
-      if(j.getLeft().getLeft() == j.getLeft()){
-        this.sendAll(new Message("La partie est terminée."));
-        this.GameOver = true;
-        return;
-      }
+      // il a gagne
+      j.getClient().incrementPoint();
+      // la partie s arrete
+      this.GameOver = true;
+      // Creation d un thread attendant la reponse de tout les clients pour relancer une partie
+      Thread t = new Thread(() -> {
+        try {
+          // 3 minutes d attente
+          long time= System.currentTimeMillis();
+          long end = time+180000;
+          while(System.currentTimeMillis() < end){
+            if(this.tousPret()){
+              this.resetPartie();
+              break;
+            }
+            Thread.sleep(100);
+          }
+          Thread.currentThread().join();
+        } catch (Exception e) {
+          e.printStackTrace();
+        }
+      });
+      t.start();
+      j.setAJoue();
+      return;
     }
     // si le joueur passe son tour
     if(pass){
@@ -316,7 +337,29 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
         this.courant = this.courant.getLeft().getLeft();
       }
     }else{
-      changeJoueur();
+      this.changeJoueur();
+    }
+    j.setAJoue();
+  }
+
+  /**
+   * Methode permettant d envoyer toute les informations necessaire a la maj des clients graphiques
+   */
+  private void sendAll() throws IOException {
+    for(JoueurInterface joue : this.joueurs) {
+      ClientInterface client = joue.getClient();
+      // permet de demander aux clients si il veulent relancer une partie
+      if(this.GameOver){
+        client.setFinPartie(this.courant.getId());
+      }else{
+        client.setMyHand(joue.getMain());
+        client.setCouleurChoisie(this.couleurChoisie);
+        client.setJoueurHand(joue.getLeft().getId(), joue.getLeft().getMain().size());
+        client.setJoueurHand(joue.getRight().getId(), joue.getRight().getMain().size());
+        client.setJoueurHand(joue.getLeft().getLeft().getId(), joue.getLeft().getLeft().getMain().size());
+        client.setTalon(this.talon.get(this.talon.size() - 1));
+        client.setPlayerTurn(this.courant.getId());
+      }
     }
   }
 
@@ -378,21 +421,13 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   * @param id, l identifiant
   * @return le joueur si il est present dans le tableau des joueurs, null sinon
   */
-  public JoueurInterface getJoueurByID(String id) throws RemoteException{
+  private JoueurInterface getJoueurByID(String id) throws RemoteException{
     for(JoueurInterface j : this.joueurs){
       if(j.getId().equals(id)){
         return j;
       }
     }
     return null;
-  }
-
-  /**
-  * Methode permettant de recuperer les cartes qui composent le talon
-  * @return les cartes qui composent le talon
-  */
-  public List<CarteInterface> getTalon(){
-	  return talon;
   }
 
   /**
@@ -407,27 +442,28 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   }
 
   /**
-  * Accesseur de l attribut GameOver
-  * @return l attribut GameOver
-  */
-  public boolean isGameOver(){
-	  return GameOver;
-  }
-
-  /**
-  * Accesseur de l attribut courant
-  * @return l attribut couleur de la carte
-  */
-  public JoueurInterface getCourant() throws RemoteException{
-	  return courant;
-  }
-
-  /**
-  * Accesseur de l attribut couleurChoisie
-  * @return l attribut couleurChoisie
-  */
-  public String getCouleurChoisie(){
-    return this.couleurChoisie;
+   * Methode effectuant les changements du a la carte qu un joueur vient de jouer
+   * @param j, le joueur qui vient de jouer une carte
+   */
+  private synchronized void getCourant(JoueurInterface j) throws IOException, InterruptedException {
+    // si j n est pas le joueur courant
+    if(j != this.courant) {
+      try {
+        // je notifie un autre Thread qui est en train d attendre
+        notify();
+        // je me met en attente
+        wait();
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }else{
+      // j attends que le joueur joue
+      j.joueurCourant();
+      // jenvoie l information a tout les joueurs
+      this.sendAll();
+      // j appel un autre Thread
+      notify();
+    }
   }
 
   /**
@@ -449,21 +485,35 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
     }
   }
 
-  private void sendAll(MessageInterface m) throws RemoteException{
-    for(JoueurInterface j : this.joueurs){
-      j.setMess(m);
-    }
-  }
-
   /**
-  * Methode permettant de savoir si tout les joueurs sont pret, afin que le serveur puisse supprimer ce uno de la liste des unos qui vont commencer
+  * Methode permettant de savoir si tout les joueurs sont pret
   * @return true si le tableau des id des joueurs pret contient tout les joueurs, false sinon
   */
-  public boolean tousPret() throws RemoteException{
+  private boolean tousPret() throws RemoteException{
     if(this.idJoueursPret.size() == 4){
+      this.idJoueursPret.clear();
       return true;
     }
     return false;
+  }
+
+  /**
+   * Methode permettant de relancer une partie si tout les joueurs sont pret
+   */
+  private void resetPartie() throws IOException {
+    this.GameOver = false;
+    this.sens = false;
+    // on remet les cartes restantes dans les mains des joueurs dans la pioche
+    for(JoueurInterface j : this.joueurs){
+      for(CarteInterface c : j.getMain()){
+        this.pioche.add(c);
+      }
+      j.getMain().clear();
+    }
+    // pareil pour les cartes du talon
+    this.talonIntoPioche();
+    // on relance avec les meme joueurs
+    this.InitGame();
   }
 
 }

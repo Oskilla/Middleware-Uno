@@ -1,11 +1,31 @@
-pour compiler le serveurou le client placez-vous dans le chemin suivant src/main/java/com/rmi et effectuez la commande suivante :
-<code>javac -cp com.rmi.* \*\/*.java</code>
-pour éxécuter le serveur ou le client retournez dans le dossier src/main/java et faites:
-<code>java com.rmi.app.App</code>
-pour trouver le processus utilsant le port 1099
+- Pré-requis / erreurs
+
+*Pour exécuter le projet vous devez vous assurer d'utiliser java 11, pour le compiler et créer les jars éxécutables vous devez également vous assurer que maven utilise java 11*
+
+Pour maven :
+
+<code>mvn -version<code>
+
+Par défaut le serveur utilise le port 1099, si ce port est déjà occupé, vous pouvez le modifier dans le code de la classe Serveur/src/main/java/com/rmi/app/App.java, vous pouvez également kill le processus utilisant le port mentionné, sous linux :
+
 <code>lsof -i:1099</code>
-pour le tuer
-<code>kill -9 NUMPROCESS</code>
+
+- Compilation / exécution
+
+compiler le projet et créer un jar exécutable avec maven :
+
+<code>mvn compile<code>
+<code>mvn clean package<code>
+
+le jar exécutable sera dans le dossier /target
+
+pour lancer le jar exécutable :
+
+<code>java -jar JarName.jar"<code>
+
+Si vous avez besoin de specifier la version de java, exemple sous windows avec le jar du client:
+
+<code>java -jar -Djava.library.path="C:\Program Files\Java\jdk-11.0.9\bin" Client-1.0-SNAPSHOT-jar-with-dependencies.jar<code>
 
 # Middleware-Uno
 
@@ -13,7 +33,7 @@ Projet de **Middleware** 2020.
 Le but de ce projet est de créer une application synchronisée avec client/serveur **RMI**.
 Nous avons choisit de faire un jeu de UNO. Nous allons donc vous détailler les règles que nous utiliserons pour notre UNO.
 
-Le jeu se joue de 2 à 10 joueurs.
+Le jeu se joue à 4 joueurs.
 
 ## Constitution du jeu
 
@@ -28,9 +48,7 @@ Le jeu se joue de 2 à 10 joueurs.
 
 ### Conditions de fin du jeu
 
-Un joueur a terminé de jouer dans la manche courante si il a épuisé toute les cartes qui composent sa main.
-
-Le jeu se termine lorsqu'il ne reste plus qu'un seul joueur en lice.
+Le jeu se termine lorsqu'un joueur n'a plus de cartes dans sa main.
 
 ### Mise en place du jeu
 
@@ -38,13 +56,11 @@ Le jeu est mélangé.
 Tout les joueurs reçoivent 7 cartes.
 Les autres cartes forment la pioche.
 La carte du dessus est retournée.
-*Si cette carte est un symbole alors le joueur qui commencera la partie définira la couleur en jouant une carte.*
+*Si cette carte est un symbole alors le jeu retire une carte jusqu'à tomber sur un chiffre.*
 
-Un joueur est choisis aléatoirement pour commencer.
+Le premier joueur à être entré dans le jeu démarre la partie.
 
 ### Déroulement d'un tour
-
-Si c'est le premier tour, le joueur choisit aléatoirement commence en posant une carte arborant une couleur (autre que noire), cette couleur définira la couleur de jeu pour le prochain joueur.
 
 Si il ne reste plus aucune carte dans la pioche, le talon est alors mélangé, vidé et placé dans la pioche.
 
@@ -68,3 +84,13 @@ Le joueur dont c'est le tour de jouer, joue une carte de même couleur, de même
 - Carte +4, couleur (Noir): lorsqu'un joueur joue cette carte, le joueur suivant pioche quatre cartes et doit passer son tour. Cette carte peut être jouée n'importe quand.
 
 - Carte Couleur, couleur (Noir): lorsqu'un joueur joue cette carte, il choisit automatiquement la couleur actuelle du jeu, et passe son tour. Cette carte peut être jouée n'importe quand.
+
+##### Partie Synchronisation
+
+1- Lorsque qu'un joueur se connecte au serveur il décide de créer un lobby ou d'en rejoindre un déjà existant. Cela se passe dans la classe Serveur/src/main/java/com/rmi/server/RMIServer. Un tableau temporaire est créé pour chaque lobby et la méthode pour rejoindre ou créer un lobby est synchronized afin qu'un seul client à la fois puisse interargir avec le dit tableau. Lorsque qu'un lobby atteint 4 joueurs ce dernier est retiré de la liste des lobbys en attente. Cette méthode assure que la gestion du tableau est Thread Safe grace aux verrous imposés par le mot clé synchronized.
+
+2- Le uno associé à un lobby étant créé avant que le dernier des quatre client reçoive le joueur qui lui est associé, un thread est créé côté client dans la méthode init() de la classe Client/src/main/java/com/rmi/controller/JeuController, ce dernier vas attendre que le client reçoive son joueur avant d'envoyer au uno commun un signal lui indiquant qu'il est prêt, méthode joueur pret de la classe uno. Cette méthode est synchronized pour s'assurer que l'ajout dans le tableau des joueurs prêt est thread safe. Côté uno un thread vas attendre que tout les joueurs soient prêt (méthode tousPret, de la classe uno) avant d'initialiser une partie, c'est à dire attribuer les cartes à chaque joueurs etc. Cela se passe dans le constructeur de la classe uno.
+
+3- Une fois que le jeu est intialisé, le Uno vas créer côté serveur un thread par clients, ces threads vont se synchroniser sur l'objet uno et tant que la partie n'est pas terminée, appeler la méthode getCourant de la classe uno avec le joueur associé au thread, cette méthode est synchronisée sur l'objet uno également. Dans cette méthode, si le joueur est le joueur courant, alors il vas indiquer au client que c'est son tour de jouer, à l'aide de la méthode joueurCourant de la classe Joueur, et attendre que ce dernier ai joué avant d'envoyer les informations à tout les clients puis de réveiller un des threads en attente sur l'objet. Si ce n'est pas le tour du joueur, le thread vas réveiller un autre thread puis attendre qu'on le réveille.
+
+4- Lorsqu'une partie est terminée, alors le uno vas créer un thread dans la méthode CarteJouer() de la classe uno qui vas indiquer à tout les clients que la partie est terminée. Ce thread vas attendre pendant 3 minutes que les joueurs indiquent au serveur qu'ils sont prêt à redémarrer une partie. Si au bout de trois minutes les joueurs ne sont pas prêt, la partie est terminée. Le système pour indiquer qu'un joueur est prêt est le même que celui du point 1.
