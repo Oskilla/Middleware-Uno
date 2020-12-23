@@ -11,9 +11,7 @@ import com.rmi.intf.CarteInterface;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
 
-/**
- * Classe representant une CarteNumero, une CarteNumero est une carte ayant juste un numero
- */
+// Classe representant une CarteNumero, une CarteNumero est une carte ayant juste un numero
 public class CarteNumero extends UnicastRemoteObject implements CarteInterface {
   // attribut representant le numero de la carte
   private int numero;

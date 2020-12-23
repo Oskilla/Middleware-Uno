@@ -17,9 +17,7 @@ import java.util.List;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
 
-/**
- * Classe representant un joueur, un joueur joue au uno avec d autres joueurs et possede des cartes de ce dernier
- */
+// Classe representant un joueur, un joueur joue au uno avec d autres joueurs et possede des cartes de ce dernier
 public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   // attribut representant l identifiant(pseudo) du joueur
   private String identifiant;
