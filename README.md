@@ -93,7 +93,7 @@ Le joueur dont c'est le tour de jouer, joue une carte de même couleur, de même
 
 - Carte Couleur, couleur (Noir): lorsqu'un joueur joue cette carte, il choisit automatiquement la couleur actuelle du jeu, et passe son tour. Cette carte peut être jouée n'importe quand.
 
-##### Partie Synchronisation
+## Partie Synchronisation
 
 1- Lorsque qu'un joueur se connecte au serveur il décide de créer un lobby ou d'en rejoindre un déjà existant. Cela se passe dans la classe Serveur/src/main/java/com/rmi/server/RMIServer. Un tableau temporaire est créé pour chaque lobby et la méthode pour rejoindre ou créer un lobby est synchronized afin qu'un seul client à la fois puisse interargir avec le dit tableau. Lorsque qu'un lobby atteint 4 joueurs ce dernier est retiré de la liste des lobbys en attente. Cette méthode assure que la gestion du tableau est Thread Safe grace aux verrous imposés par le mot clé synchronized.
 
