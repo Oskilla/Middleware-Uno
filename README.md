@@ -12,7 +12,7 @@ Le jeu se joue à 4 joueurs.
 
 --------------------------------------------------------------------------------
 
-Pour maven :
+Pour connaître la version de java utilisée par maven :
 
 <code>mvn -version</code>
 
@@ -27,7 +27,7 @@ Par défaut le serveur utilise le port 1099, si ce port est déjà occupé, vous
 compiler le projet et créer un jar exécutable avec maven :
 
 <code>mvn compile</code>
-<code>mvn clean package<code>
+<code>mvn clean package</code>
 
 le jar exécutable sera dans le dossier *target*
 
