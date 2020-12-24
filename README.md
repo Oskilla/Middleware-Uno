@@ -64,7 +64,7 @@ Le jeu est mélangé.
 Tout les joueurs reçoivent 7 cartes.
 Les autres cartes forment la pioche.
 La carte du dessus est retournée.
-*Si cette carte est un symbole alors le jeu retire une carte jusqu'à tomber sur un chiffre.*
+Si cette carte est un symbole alors le jeu retire une carte jusqu'à tomber sur un chiffre.
 
 Le premier joueur à être entré dans le jeu démarre la partie.
 
@@ -76,10 +76,10 @@ Si il ne reste plus aucune carte dans la pioche, le talon est alors mélangé, v
 Il en vas de même pour les effets des cartes Sens, ou bien Interdit.**
 
 Le joueur dont c'est le tour de jouer, joue une carte de même couleur, de même numéro ou de même symbole que le talon, il peut également jouer une carte Couleur ou bien +4. Une fois que la carte est jouée, le joueur passe automatiquement son tour.
-*Si le joueur ne peut pas jouer de cartes alors il doit piocher dans la pioche, la carte est donc retirée du paquet.*
+Si le joueur ne peut pas jouer de cartes alors il doit piocher dans la pioche, la carte est donc retirée du paquet.
 
-**Si le joueur pioche une carte, il peut, si les règles ci-dessus sont respectées, jouer la carte et aucune autre, sinon le joueur passe son tour**
-**Le joueur ne peut jouer qu'une carte à la fois**
+Si le joueur pioche une carte, il peut, si les règles ci-dessus sont respectées, jouer la carte et aucune autre, sinon le joueur passe son tour**
+Le joueur ne peut jouer qu'une carte à la fois
 
 ### Explication des cartes Actions
 
