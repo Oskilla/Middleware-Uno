@@ -8,7 +8,7 @@ Le jeu se joue à 4 joueurs.
 
 ## Pré-requis / erreurs
 
-* **Pour exécuter le projet vous devez vous assurer d'utiliser java 11, pour le compiler et créer les jars éxécutables vous devez également vous assurer que maven utilise java 11** *
+**Pour exécuter le projet vous devez vous assurer d'utiliser java 11, pour le compiler et créer les jars éxécutables vous devez également vous assurer que maven utilise java 11**
 
 --------------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ le jar exécutable sera dans le dossier **target**
 
 pour lancer le jar exécutable :
 
-<code>java -jar JarName.jar"</code>
+<code>java -jar JarName.jar</code>
 
 Si vous avez besoin de specifier la version de java, exemple sous windows avec le jar du client:
 
@@ -58,7 +58,7 @@ Si vous avez besoin de specifier la version de java, exemple sous windows avec l
 
 Le jeu se termine lorsqu'un joueur n'a plus de cartes dans sa main.
 
-### Mise en place du jeu
+## Mise en place du jeu
 
 Le jeu est mélangé.
 Tout les joueurs reçoivent 7 cartes.
@@ -81,7 +81,7 @@ Le joueur dont c'est le tour de jouer, joue une carte de même couleur, de même
 **Si le joueur pioche une carte, il peut, si les règles ci-dessus sont respectées, jouer la carte et aucune autre, sinon le joueur passe son tour**
 **Le joueur ne peut jouer qu'une carte à la fois**
 
-#### Explication des cartes Actions
+### Explication des cartes Actions
 
 - Carte +2, couleurs (Rouge,Vert,Jaune,Bleu): lorsqu'un joueur joue cette carte, le joueur suivant pioche deux cartes et doit passer son tour. Cette carte ne peut être jouée que sur une carte de même couleur, ou sur une autre carte de symbole +2.
 
