@@ -8,7 +8,7 @@ Le jeu se joue à 4 joueurs.
 
 ## Pré-requis / erreurs
 
-*Pour exécuter le projet vous devez vous assurer d'utiliser java 11, pour le compiler et créer les jars éxécutables vous devez également vous assurer que maven utilise java 11*
+* **Pour exécuter le projet vous devez vous assurer d'utiliser java 11, pour le compiler et créer les jars éxécutables vous devez également vous assurer que maven utilise java 11** *
 
 --------------------------------------------------------------------------------
 
@@ -27,9 +27,10 @@ Par défaut le serveur utilise le port 1099, si ce port est déjà occupé, vous
 compiler le projet et créer un jar exécutable avec maven :
 
 <code>mvn compile</code>
+
 <code>mvn clean package</code>
 
-le jar exécutable sera dans le dossier *target*
+le jar exécutable sera dans le dossier **target**
 
 --------------------------------------------------------------------------------
 
