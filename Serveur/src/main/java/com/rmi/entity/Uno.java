@@ -1,6 +1,6 @@
 /**
  * Projet Middleware-Uno
- * Une implémentation du jeu de plateau Uno avec une architecture client / Serveur à l'aide de RMI.
+ * Une implémentation du jeu de plateau Uno avec une architecture Client / Serveur à l'aide de RMI.
  * @authors Leveille Bastien, Lecomte Soline, Lode Gael & Perez Damien
  */
 
@@ -32,9 +32,9 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   private List<CarteInterface> talon = new ArrayList<CarteInterface>();
   // attribut representant la liste des cartes composant la pioche
   private List<CarteInterface> pioche = new ArrayList<CarteInterface>();
-  // attribut representant toute les couleurs presentent dans le jeu
+  // attribut representant toutes les couleurs presentes dans le jeu
   private final List<String> couleurs = new ArrayList<String>(Arrays.asList("Rouge","Bleu","Jaune","Vert","Noire"));
-  // attribut representant tout les symboles present dans le jeu
+  // attribut representant tous les symboles presents dans le jeu
   private final List<String> symboles = new ArrayList<String>(Arrays.asList("+2","sens","interdit","+4","couleur"));
   // attribut permettant de recenser les joueurs qui souhaitent relancer une partie
   private List<String> idJoueursPret = new ArrayList<String>();
@@ -84,8 +84,8 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
       this.pioche.add(carteJoker);
       this.pioche.add(carteJoker2);
     }
-    // Thread qui vas attendre que tout les joueurs soient pret avant d initialiser la partie
-    // cela est neccessaire car le le uno est cree avant que le dernier client graphique ne recoive son joueur
+    // Thread qui vas attendre que tout les joueurs soient prets avant d initialiser la partie
+    // cela est neccessaire car le uno est cree avant que le dernier client graphique ne recoive son joueur
     Thread t = new Thread(() -> {
         try {
           while(!this.tousPret()){Thread.sleep(10);}
@@ -99,7 +99,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   }
 
   /**
-  * Methode initialisant le jeu, c est ici que les joueurs vont recevoir leurs cartes et que le talon vas etre selectionne
+  * Methode initialisant le jeu, c est ici que les joueurs vont recevoir leurs cartes et que le talon va etre selectionne
   */
   private void InitGame() throws IOException {
     // on melange la pioche
@@ -217,7 +217,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
             // il pioche s il ne vient pas de piocher
             CarteInterface cartePiocher = this.pioche.remove(0);
             j.piocher(cartePiocher);
-            // on envoie l information a tout les joueurs
+            // on envoie l information a tous les joueurs
             this.sendAll();
           }
         }else{
@@ -265,7 +265,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
                   if(carte.getClassName().equals("CarteNumero")){
                     // si le numero de la carte est le meme que celui de la derniere carte du talon
                     if(carte.getNumero() == last.getNumero()){
-                      // la carte etant de meme numero mais de ouleur diffente je change la couleur demandee
+                      // la carte etant de meme numero mais de couleur diffente je change la couleur demandee
                       this.couleurChoisie = carte.getCouleur();
                       carteValide = true;
                     }
@@ -293,7 +293,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   }
 
   /**
-  * Methode effectuant les changements du a la carte qu un joueur vient de jouer
+  * Methode effectuant les changements dus a la carte qu un joueur vient de jouer
   * @param j, le joueur qui vient de jouer une carte
   * @param c, la carte qui vient d etre jouee
   * @param pass, booleen permettant de specifier si la carte jouee implique que le joueur suivant doit passer son tour ou non
@@ -307,7 +307,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
       j.getClient().incrementPoint();
       // la partie s arrete
       this.GameOver = true;
-      // Creation d un thread attendant la reponse de tout les clients pour relancer une partie
+      // Creation d un thread attendant la reponse de tous les clients pour relancer une partie
       Thread t = new Thread(() -> {
         try {
           // 3 minutes d attente
@@ -343,7 +343,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   }
 
   /**
-   * Methode permettant d envoyer toute les informations necessaire a la maj des clients graphiques
+   * Methode permettant d envoyer toute les informations necessaires a la maj des clients graphiques
    */
   private void sendAll() throws IOException {
     for(JoueurInterface joue : this.joueurs) {
@@ -431,7 +431,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   }
 
   /**
-  * Methode permettant de changer la valeure du sens du jeu
+  * Methode permettant de changer le sens du jeu
   */
   private void changeSens(){
     if(this.sens){
@@ -442,7 +442,7 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
   }
 
   /**
-   * Methode effectuant les changements du a la carte qu un joueur vient de jouer
+   * Methode effectuant les changements dus a la carte qu un joueur vient de jouer
    * @param j, le joueur qui vient de jouer une carte
    */
   private synchronized void getCourant(JoueurInterface j) throws IOException, InterruptedException {
@@ -459,9 +459,9 @@ public class Uno extends UnicastRemoteObject implements UnoInterface {
     }else{
       // j attends que le joueur joue
       j.joueurCourant();
-      // jenvoie l information a tout les joueurs
+      // jenvoie l information a tous les joueurs
       this.sendAll();
-      // j appel un autre Thread
+      // j appelle un autre Thread
       notify();
     }
   }

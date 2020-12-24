@@ -1,6 +1,6 @@
 /**
  * Projet Middleware-Uno
- * Une implémentation du jeu de plateau Uno avec une architecture client / Serveur à l'aide de RMI.
+ * Une implémentation du jeu de plateau Uno avec une architecture Client / Serveur à l'aide de RMI.
  * @authors Leveille Bastien, Lecomte Soline, Lode Gael & Perez Damien
  */
 
@@ -48,7 +48,7 @@ public class SelectLobbyController {
     Stage stage = (Stage) node.getScene().getWindow();
     // recuperation de l adresse du serveur
     mInterface = (RMIServerInterface) stage.getUserData();
-    // recuperation du nombre de lobbys present sur le serveur
+    // recuperation du nombre de lobbys presents sur le serveur
     nbLobbys = mInterface.getLobbys();
     valider.setDisable(true);
     background.setImage(new Image("/images/uno.png"));

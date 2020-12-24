@@ -1,6 +1,6 @@
 /**
  * Projet Middleware-Uno
- * Une implémentation du jeu de plateau Uno avec une architecture client / Serveur à l'aide de RMI.
+ * Une implémentation du jeu de plateau Uno avec une architecture Client / Serveur à l'aide de RMI.
  * @authors Leveille Bastien, Lecomte Soline, Lode Gael & Perez Damien
  */
 
@@ -38,7 +38,7 @@ public class ChooseLobbyController {
     background.setVisible(true);
   }
 
-  // on choisis un lobby existant
+  // on choisit un lobby existant
   @FXML
   private void handleButtonExist (ActionEvent event) throws Exception {
     Stage stage = null;
@@ -55,7 +55,7 @@ public class ChooseLobbyController {
     stage.show();
   }
 
-  // on créé un lobby
+  // on cree un lobby
   @FXML
   private void handleCreate (ActionEvent event) throws Exception {
     Stage stage = null;

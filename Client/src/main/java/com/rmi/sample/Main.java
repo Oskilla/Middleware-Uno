@@ -1,6 +1,6 @@
 /**
  * Projet Middleware-Uno
- * Une implémentation du jeu de plateau Uno avec une architecture client / Serveur à l'aide de RMI.
+ * Une implémentation du jeu de plateau Uno avec une architecture Client / Serveur à l'aide de RMI.
  * @authors Leveille Bastien, Lecomte Soline, Lode Gael & Perez Damien
  */
 
@@ -13,7 +13,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-// creation de la première scene pour se connecter au serveur
+// creation de la premiere scene pour se connecter au serveur
 public class Main extends Application {
   @Override
   public void start(Stage primaryStage) throws Exception{

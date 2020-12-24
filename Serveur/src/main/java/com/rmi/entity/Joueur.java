@@ -1,6 +1,6 @@
 /**
  * Projet Middleware-Uno
- * Une implémentation du jeu de plateau Uno avec une architecture client / Serveur à l'aide de RMI.
+ * Une implémentation du jeu de plateau Uno avec une architecture Client / Serveur à l'aide de RMI.
  * @authors Leveille Bastien, Lecomte Soline, Lode Gael & Perez Damien
  */
 
@@ -17,7 +17,7 @@ import java.util.List;
 import java.rmi.server.UnicastRemoteObject;
 import java.rmi.RemoteException;
 
-// Classe representant un joueur, un joueur joue au uno avec d autres joueurs et possede des cartes de ce dernier
+// Classe representant un joueur, un joueur joue au uno avec d autres joueurs et possede des cartes
 public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   // attribut representant l identifiant(pseudo) du joueur
   private String identifiant;
@@ -31,7 +31,7 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   private UnoInterface myUno;
   // attribut representant le nombre de points des joueurs
   private int points = 0;
-  // attribut representant le clien (graphique) lie au joueur cote serveur
+  // attribut representant le client (graphique) lie au joueur cote serveur
   private ClientInterface client;
   // booleen indiquant si le joueur a joue pendant son tour
   private boolean aJoue = false;
@@ -62,7 +62,7 @@ public class Joueur extends UnicastRemoteObject implements JoueurInterface{
   /**
    * Methode permettant de savoir si c est a ce joueur de jouer
    * Cette methode est appelee par le uno du joueur afin de lui indiquer que c est son tour de jouer
-   * Le joueur vas ainsi indiquer a son client graphique qu il peut jouer et vas attendre qu il le fasse
+   * Le joueur va ainsi indiquer a son client graphique qu il peut jouer et va attendre qu il le fasse
    */
   public void joueurCourant() throws InterruptedException, RemoteException {
      this.client.setPeutJouer();

@@ -1,6 +1,6 @@
 /**
  * Projet Middleware-Uno
- * Une implémentation du jeu de plateau Uno avec une architecture client / Serveur à l'aide de RMI.
+ * Une implémentation du jeu de plateau Uno avec une architecture Client / Serveur à l'aide de RMI.
  * @authors Leveille Bastien, Lecomte Soline, Lode Gael & Perez Damien
  */
 
@@ -96,10 +96,10 @@ public class JeuController extends UnicastRemoteObject implements ClientInterfac
     myName.setText(monJoueur.getId());
     Salle.setText("Salle : " + salle);
     Points.setText("Point: "+point);
-    // une carte de notre main est toujours presente pour que les prochaines se base sur ses informations, elle est cachee si besoin
+    // une carte de notre main est toujours presente pour que les prochaines se basent sur ses informations, elle est cachee si besoin
     // de meme pour les mains des autres joueurs
     myCard.setId("0");
-    // creation du thread qui vas indiquer que le joueur a bien recu son joueur associe, et qu il est donc pret
+    // creation du thread qui va indiquer que le joueur a bien recu son joueur associe, et qu il est donc pret
     Thread t = new Thread(() -> {
       try {
         while(monJoueur.getUno() == null){}
@@ -186,7 +186,7 @@ public class JeuController extends UnicastRemoteObject implements ClientInterfac
     }
   }
 
-  // creer une alerte pour indiquer que la partie est finie
+  // cree une alerte pour indiquer que la partie est finie
   public void setFinPartie(String name) throws IOException {
     Platform.runLater(new Runnable() {
       @Override
