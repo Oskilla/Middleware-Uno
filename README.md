@@ -14,7 +14,7 @@ Le jeu se joue à 4 joueurs.
 
 Pour maven :
 
-<code>mvn -version<code>
+<code>mvn -version</code>
 
 --------------------------------------------------------------------------------
 
@@ -26,7 +26,7 @@ Par défaut le serveur utilise le port 1099, si ce port est déjà occupé, vous
 
 compiler le projet et créer un jar exécutable avec maven :
 
-<code>mvn compile<code>
+<code>mvn compile</code>
 <code>mvn clean package<code>
 
 le jar exécutable sera dans le dossier *target*
@@ -35,11 +35,11 @@ le jar exécutable sera dans le dossier *target*
 
 pour lancer le jar exécutable :
 
-<code>java -jar JarName.jar"<code>
+<code>java -jar JarName.jar"</code>
 
 Si vous avez besoin de specifier la version de java, exemple sous windows avec le jar du client:
 
-<code>java -jar -Djava.library.path="C:\Program Files\Java\jdk-11.0.9\bin" Client-1.0-SNAPSHOT-jar-with-dependencies.jar<code>
+<code>java -jar -Djava.library.path="C:\Program Files\Java\jdk-11.0.9\bin" Client-1.0-SNAPSHOT-jar-with-dependencies.jar</code>
 
 
 ## Constitution du jeu
