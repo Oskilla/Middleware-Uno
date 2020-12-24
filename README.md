@@ -1,32 +1,3 @@
-- Pré-requis / erreurs
-
-*Pour exécuter le projet vous devez vous assurer d'utiliser java 11, pour le compiler et créer les jars éxécutables vous devez également vous assurer que maven utilise java 11*
-
-Pour maven :
-
-<code>mvn -version<code>
-
-Par défaut le serveur utilise le port 1099, si ce port est déjà occupé, vous pouvez le modifier dans le code de la classe Serveur/src/main/java/com/rmi/app/App.java, vous pouvez également kill le processus utilisant le port mentionné, sous linux :
-
-<code>lsof -i:1099</code>
-
-- Compilation / exécution
-
-compiler le projet et créer un jar exécutable avec maven :
-
-<code>mvn compile<code>
-<code>mvn clean package<code>
-
-le jar exécutable sera dans le dossier /target
-
-pour lancer le jar exécutable :
-
-<code>java -jar JarName.jar"<code>
-
-Si vous avez besoin de specifier la version de java, exemple sous windows avec le jar du client:
-
-<code>java -jar -Djava.library.path="C:\Program Files\Java\jdk-11.0.9\bin" Client-1.0-SNAPSHOT-jar-with-dependencies.jar<code>
-
 # Middleware-Uno
 
 Projet de **Middleware** 2020.
@@ -34,6 +5,43 @@ Le but de ce projet est de créer une application synchronisée avec client/serv
 Nous avons choisit de faire un jeu de UNO. Nous allons donc vous détailler les règles que nous utiliserons pour notre UNO.
 
 Le jeu se joue à 4 joueurs.
+
+## Pré-requis / erreurs
+
+**Pour exécuter le projet vous devez vous assurer d'utiliser java 11, pour le compiler et créer les jars éxécutables vous devez également vous assurer que maven utilise java 11**
+
+--------------------------------------------------------------------------------
+
+Pour connaître la version de java utilisée par maven :
+
+<code>mvn -version</code>
+
+--------------------------------------------------------------------------------
+
+Par défaut le serveur utilise le port 1099, si ce port est déjà occupé, vous pouvez le modifier dans le code de la classe Serveur/src/main/java/com/rmi/app/App.java, vous pouvez également kill le processus utilisant le port mentionné, sous linux :
+
+<code>lsof -i:1099</code>
+
+## Compilation / exécution
+
+compiler le projet et créer un jar exécutable avec maven :
+
+<code>mvn compile</code>
+
+<code>mvn clean package</code>
+
+le jar exécutable sera dans le dossier **target**
+
+--------------------------------------------------------------------------------
+
+pour lancer le jar exécutable :
+
+<code>java -jar JarName.jar</code>
+
+Si vous avez besoin de specifier la version de java, exemple sous windows avec le jar du client:
+
+<code>java -jar -Djava.library.path="C:\Program Files\Java\jdk-11.0.9\bin" Client-1.0-SNAPSHOT-jar-with-dependencies.jar</code>
+
 
 ## Constitution du jeu
 
@@ -50,13 +58,13 @@ Le jeu se joue à 4 joueurs.
 
 Le jeu se termine lorsqu'un joueur n'a plus de cartes dans sa main.
 
-### Mise en place du jeu
+## Mise en place du jeu
 
 Le jeu est mélangé.
 Tout les joueurs reçoivent 7 cartes.
 Les autres cartes forment la pioche.
 La carte du dessus est retournée.
-*Si cette carte est un symbole alors le jeu retire une carte jusqu'à tomber sur un chiffre.*
+Si cette carte est un symbole alors le jeu retire une carte jusqu'à tomber sur un chiffre.
 
 Le premier joueur à être entré dans le jeu démarre la partie.
 
@@ -68,12 +76,12 @@ Si il ne reste plus aucune carte dans la pioche, le talon est alors mélangé, v
 Il en vas de même pour les effets des cartes Sens, ou bien Interdit.**
 
 Le joueur dont c'est le tour de jouer, joue une carte de même couleur, de même numéro ou de même symbole que le talon, il peut également jouer une carte Couleur ou bien +4. Une fois que la carte est jouée, le joueur passe automatiquement son tour.
-*Si le joueur ne peut pas jouer de cartes alors il doit piocher dans la pioche, la carte est donc retirée du paquet.*
+Si le joueur ne peut pas jouer de cartes alors il doit piocher dans la pioche, la carte est donc retirée du paquet.
 
-**Si le joueur pioche une carte, il peut, si les règles ci-dessus sont respectées, jouer la carte et aucune autre, sinon le joueur passe son tour**
-**Le joueur ne peut jouer qu'une carte à la fois**
+Si le joueur pioche une carte, il peut, si les règles ci-dessus sont respectées, jouer la carte et aucune autre, sinon le joueur passe son tour.
+Le joueur ne peut jouer qu'une carte à la fois
 
-#### Explication des cartes Actions
+### Explication des cartes Actions
 
 - Carte +2, couleurs (Rouge,Vert,Jaune,Bleu): lorsqu'un joueur joue cette carte, le joueur suivant pioche deux cartes et doit passer son tour. Cette carte ne peut être jouée que sur une carte de même couleur, ou sur une autre carte de symbole +2.
 
@@ -85,7 +93,7 @@ Le joueur dont c'est le tour de jouer, joue une carte de même couleur, de même
 
 - Carte Couleur, couleur (Noir): lorsqu'un joueur joue cette carte, il choisit automatiquement la couleur actuelle du jeu, et passe son tour. Cette carte peut être jouée n'importe quand.
 
-##### Partie Synchronisation
+## Partie Synchronisation
 
 1- Lorsque qu'un joueur se connecte au serveur il décide de créer un lobby ou d'en rejoindre un déjà existant. Cela se passe dans la classe Serveur/src/main/java/com/rmi/server/RMIServer. Un tableau temporaire est créé pour chaque lobby et la méthode pour rejoindre ou créer un lobby est synchronized afin qu'un seul client à la fois puisse interargir avec le dit tableau. Lorsque qu'un lobby atteint 4 joueurs ce dernier est retiré de la liste des lobbys en attente. Cette méthode assure que la gestion du tableau est Thread Safe grace aux verrous imposés par le mot clé synchronized.
 
