@@ -1,23 +1,37 @@
-- Pré-requis / erreurs
+# Middleware-Uno
+
+Projet de **Middleware** 2020.
+Le but de ce projet est de créer une application synchronisée avec client/serveur **RMI**.
+Nous avons choisit de faire un jeu de UNO. Nous allons donc vous détailler les règles que nous utiliserons pour notre UNO.
+
+Le jeu se joue à 4 joueurs.
+
+## Pré-requis / erreurs
 
 *Pour exécuter le projet vous devez vous assurer d'utiliser java 11, pour le compiler et créer les jars éxécutables vous devez également vous assurer que maven utilise java 11*
+
+--------------------------------------------------------------------------------
 
 Pour maven :
 
 <code>mvn -version<code>
 
+--------------------------------------------------------------------------------
+
 Par défaut le serveur utilise le port 1099, si ce port est déjà occupé, vous pouvez le modifier dans le code de la classe Serveur/src/main/java/com/rmi/app/App.java, vous pouvez également kill le processus utilisant le port mentionné, sous linux :
 
 <code>lsof -i:1099</code>
 
-- Compilation / exécution
+## Compilation / exécution
 
 compiler le projet et créer un jar exécutable avec maven :
 
 <code>mvn compile<code>
 <code>mvn clean package<code>
 
-le jar exécutable sera dans le dossier /target
+le jar exécutable sera dans le dossier *target*
+
+--------------------------------------------------------------------------------
 
 pour lancer le jar exécutable :
 
@@ -27,13 +41,6 @@ Si vous avez besoin de specifier la version de java, exemple sous windows avec l
 
 <code>java -jar -Djava.library.path="C:\Program Files\Java\jdk-11.0.9\bin" Client-1.0-SNAPSHOT-jar-with-dependencies.jar<code>
 
-# Middleware-Uno
-
-Projet de **Middleware** 2020.
-Le but de ce projet est de créer une application synchronisée avec client/serveur **RMI**.
-Nous avons choisit de faire un jeu de UNO. Nous allons donc vous détailler les règles que nous utiliserons pour notre UNO.
-
-Le jeu se joue à 4 joueurs.
 
 ## Constitution du jeu
 
