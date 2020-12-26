@@ -103,3 +103,7 @@ Le joueur ne peut jouer qu'une carte à la fois.
 3- Une fois que le jeu est intialisé, le Uno va créer côté serveur un thread par client, ces threads vont se synchroniser sur l'objet uno et tant que la partie n'est pas terminée, appeler la méthode getCourant de la classe uno avec le joueur associé au thread. Cette méthode est synchronisée sur l'objet uno également. Dans cette méthode, si le joueur est le joueur courant, alors il va indiquer au client que c'est son tour de jouer, à l'aide de la méthode joueurCourant de la classe Joueur, et attendre que ce dernier aie joué avant d'envoyer les informations à tous les clients puis de réveiller un des threads en attente sur l'objet. Si ce n'est pas le tour du joueur, le thread va réveiller un autre thread puis attendre qu'on le réveille.
 
 4- Lorsqu'une partie est terminée, alors le uno vas créer un thread dans la méthode CarteJouer() de la classe uno qui va indiquer à tous les clients que la partie est terminée. Ce thread vas attendre pendant 3 minutes que les joueurs indiquent au serveur qu'ils sont prêt à redémarrer une partie. Si au bout de trois minutes les joueurs ne sont pas prêt, la partie est terminée. Le système pour indiquer qu'un joueur est prêt est le même que celui du point 1.
+
+## Présentation visuelle
+
+![Alt text]("/visuel/connect")
