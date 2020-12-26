@@ -106,4 +106,8 @@ Le joueur ne peut jouer qu'une carte à la fois.
 
 ## Présentation visuelle
 
-![Alt text]("/visuel/connect")
+![Alt text](<visuel/connect.png>)
+![Alt text](<visuel/chooseLobby.png>)
+![Alt text](<visuel/selectLobby.png>)
+![Alt text](<visuel/jeu.png>)
+
