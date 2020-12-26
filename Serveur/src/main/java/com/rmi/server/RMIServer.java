@@ -1,6 +1,6 @@
 /**
  * Projet Middleware-Uno
- * Une implémentation du jeu de plateau Uno avec une architecture client / Serveur à l'aide de RMI.
+ * Une implémentation du jeu de plateau Uno avec une architecture Client / Serveur à l'aide de RMI.
  * @authors Leveille Bastien, Lecomte Soline, Lode Gael & Perez Damien
  */
 
@@ -17,7 +17,7 @@ import com.rmi.entity.Joueur;
 import com.rmi.intf.*;
 
 /**
- * Classe representant le serveur RMI, Le serveur vas recuperer les joueurs qui s y connectent et vas creer des unos pour chaque quatuors
+ * Classe representant le serveur RMI, Le serveur va recuperer les joueurs qui s y connectent et va creer des unos pour chaque quatuors
  * C est ici que les entitees Joueurs & Uno vont etre associees
  */
 public class RMIServer implements RMIServerInterface{
